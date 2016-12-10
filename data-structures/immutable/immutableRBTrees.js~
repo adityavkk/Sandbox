@@ -1,6 +1,7 @@
-const log = console.log
 const rd = 'red',
-  bk = 'black';
+  bk = 'black',
+  log = console.log;
+
 class Node {
   constructor(c, l, v, r) {
     this.v = v;
@@ -38,28 +39,28 @@ function bal(n) {
   //Case 1
   if (twoLefts(n)) {
     return node(rd,
-                node(bk, mt(), n.l.l.v, mt()),
-                n.l.v,
-                node(bk, n.l.r, n.v, mt()));
+      node(bk, mt(), n.l.l.v, mt()),
+      n.l.v,
+      node(bk, n.l.r, n.v, mt()));
   }
   if (twoRights(n)) {
     return node(rd,
-                node(bk, mt(), n.v, n.r.l),
-                n.r.v,
-                node(bk, mt(), n.r.r.v, mt()));
+      node(bk, mt(), n.v, n.r.l),
+      n.r.v,
+      node(bk, mt(), n.r.r.v, mt()));
   }
   //Case 2
   if (mixedLeft(n)) {
     return node(rd,
-                node(bk, n.l.l, n.l.v, mt()),
-                n.l.r.v,
-                node(bk, mt(), n.v, mt()));
+      node(bk, n.l.l, n.l.v, mt()),
+      n.l.r.v,
+      node(bk, mt(), n.v, mt()));
   }
   if (mixedRight(n)) {
     return node(rd,
-                node(bk, mt(), n.v, mt()),
-                n.r.l.v,
-                node(bk, mt(), n.r.v, n.r.r));
+      node(bk, mt(), n.v, mt()),
+      n.r.l.v,
+      node(bk, mt(), n.r.v, n.r.r));
   }
   return n;
 }
