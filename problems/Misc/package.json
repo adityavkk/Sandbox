@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "murmurhash-native": "^3.2.0",
+    "murmurhash3js": "^3.0.1"
+  }
+}
