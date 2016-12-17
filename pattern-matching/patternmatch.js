@@ -53,7 +53,7 @@ function match(vals, pt) {
     if (p === wc) return true;
     if (isPrim(p)) return p === v;
     if (isPrim(v)) return p === v;
-    if (typeof p === 'function' && p === v.constructor) 
+    if (typeof p === 'function' && p === v.constructor)
       return match(Object.values(v), pt.slice(1));
     if (Array.isArray(p)) return match(v, p);
   })
@@ -71,4 +71,3 @@ Number.prototype.match = function (pattern) {
 }
 
 log(numOnes(list))
-
