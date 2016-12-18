@@ -15,3 +15,4 @@ encode (x:xs) = oneOrMany x n : encode (drop n xs)
     oneOrMany x n
       | n == 0 = One x
       | otherwise = Many (n + 1) x
+
