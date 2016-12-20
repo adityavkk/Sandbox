@@ -18,3 +18,4 @@ function interpreter() {
 }
 tokenize('abcd')
 console.log()
+

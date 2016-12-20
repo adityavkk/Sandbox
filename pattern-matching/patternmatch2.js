@@ -72,11 +72,13 @@ function isMatch(val, pat, locals) {
 
 function replace(f, locals) {
   const rep = node => {
-    let name = locals[node.name]
-    if (node.type === "Identifier" && name) {
+    let val = locals[node.name]
+    if (node.type === "Identifier" && val) {
+      // const newNode = esprima.parse(val.toString())
+      log(val);
       node.type = "Literal";
-      node.value = name;
-      node.raw = JSON.stringify(name);
+      node.value = val;
+      node.raw = JSON.stringify(val);
       delete node.name;
     }
   }
@@ -101,4 +103,3 @@ const ast = parse(() => {
 
 const toRep = { type: "Literal", value: 5, raw: (5).toString() }
 log(pp(match(zs, tk)))
-
