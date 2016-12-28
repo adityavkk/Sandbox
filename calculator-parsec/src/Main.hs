@@ -7,7 +7,7 @@ numberString = many1 digit -- many1 applies digit until it fails
 
 -- since numberString is a parser, and parsers are functors, we fmap readFloat
 number :: Parser Float
-number = withWhitespace plainNumber
+number =  plainNumber
   where plainNumber = fmap readFloat numberString
         readFloat   = read :: String -> Float
         -- digit is a parser that parses digits
@@ -48,7 +48,7 @@ divide :: Parser (Float -> Float -> Float)
 divide = fmap (const (/)) (char '/')
 
 chainMultiplyDivide :: Parser Float
-chainMultiplyDivide = chainl1 number (divide <|> multiply)
+chainMultiplyDivide = chainl1 expressionWithParensOrNumber (divide <|> multiply)
 -- <|> is a parsec or, which will pick plus if it finds a '+' or subtract for '-'
 
 expression :: Parser Float
@@ -56,3 +56,12 @@ expression = chainl1 chainMultiplyDivide (plus <|> subtract)
 -- Since we want the multiplication/division expression to be evaluated before
 -- the plus and subtract are assigned we can chainMutiplyDivide which defaults
 -- to number if it doesn't find a * or / anyway
+
+withParens :: Parser a -> Parser a
+withParens = between (char '(') (char ')')
+
+expressionWithParens :: Parser Float
+expressionWithParens = withParens expression
+
+expressionWithParensOrNumber :: Parser Float
+expressionWithParensOrNumber = withWhitespace (expressionWithParens <|> number)
