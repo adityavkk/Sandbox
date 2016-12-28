@@ -41,6 +41,18 @@ subtract = fmap (const (-)) (char '-')
 chainSubtract :: Parser Float
 chainSubtract = chainl1 number subtract
 
-chainPlusSubtract :: Parser Float
-chainPlusSubtract = chainl1 number (plus <|> subtract)
+multiply :: Parser (Float -> Float -> Float)
+multiply = fmap (const (*)) (char '*')
+
+divide :: Parser (Float -> Float -> Float)
+divide = fmap (const (/)) (char '/')
+
+chainMultiplyDivide :: Parser Float
+chainMultiplyDivide = chainl1 number (divide <|> multiply)
 -- <|> is a parsec or, which will pick plus if it finds a '+' or subtract for '-'
+
+expression :: Parser Float
+expression = chainl1 chainMultiplyDivide (plus <|> subtract)
+-- Since we want the multiplication/division expression to be evaluated before
+-- the plus and subtract are assigned we can chainMutiplyDivide which defaults
+-- to number if it doesn't find a * or / anyway
