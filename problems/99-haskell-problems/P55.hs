@@ -1,4 +1,6 @@
 -- Construct completely balanced binary trees
+module P55 where
+
 data Tree a = Empty | Branch a (Tree a) (Tree a)
   deriving (Show, Eq)
 

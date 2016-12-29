@@ -1,4 +1,5 @@
 -- Binary search trees
+module P57 where
 
 data BST a = Empty | Branch a (BST a) (BST a)
   deriving (Show, Eq)
