@@ -19,8 +19,8 @@ tails (x:xs) = (x:xs) : tails xs
 -- The divide and conquer algorithm:
 -------------------------------------------------------------------------------
 -- Similar to how one can reason about the merge sort algorithm by assuming
--- that each sub-lists is sorted, and devise a merge sub-routine for 2 sorted
--- lists that is linear, we can reason about the msc algorithm by assuming
+-- that each sub-list to be merged is sorted, and devise a merge sub-routine for them
+-- that is linear, we can reason about the msc algorithm by assuming
 -- that if each of the sub-lists is sorted and each element is packaged in a tuple
 -- with the number of elements larger than it that came after it in the original
 -- ordering.
