@@ -35,11 +35,9 @@ type Table a = [(a, Int)]
 msc :: Ord a => [a] -> Int
 msc = maximum . map snd . table
 
-table :: Ord a => [a] -> Table a
 -- table xs = join (table ys) (table zs) --> where ys and zs are half the size of xs
--- base case:
+table :: Ord a => [a] -> Table a
 table [x] = [(x, 0)]
--- recursive step:
 table xs = join (m - n) (table ys) (table zs)
     where m        = length xs
           n        = m `div` 2
@@ -49,10 +47,8 @@ table xs = join (m - n) (table ys) (table zs)
           -- and also to remove having to calculate lenghts every time
 
 join :: Ord a => Int -> Table a -> Table a -> Table a
--- base cases:
 join _ txs [] = txs
 join _ [] tys = tys
--- recursive step:
 join i txs@((x, c):txs') tys@((y, d):tys')
   | x < y  = (x, c + i) : join i txs' tys
   | x >= y = (y, d) : join (i - 1) txs tys'
