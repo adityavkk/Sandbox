@@ -1,14 +1,15 @@
 // LIS Problem on arrays of number
+const log = console.log
 const l = (j, xs) => {
   if (j === 0) return 1;
   const allLs = xs.slice(0, j).map((_, i) => {
     const xi = xs[i],
       xj = xs[j]
-    return xi < xj ? l(i, xs) + 1 : l(i, xs)
+    return xi < xj ? l(i, xs) + 1 : 0
   })
-  return Math.max(...allLs)
+  return Math.max(...allLs, 1)
 }
 
-const lis = xs => Math.max(...(xs.map((_, j, ns) => l(j, ns))))
+const lis = xs => Math.max(...((xs.map((_, j) => l(j, xs)))))
 
-console.log(lis([-5, 1, 2, 0, 1, 2, -1, 0, 1, 2, 3, 4]))
+console.log(lis([7, 2, 4, 8, 1, 9, 6, 7, 8]))
