@@ -356,13 +356,17 @@ replicateA n a = sequence (map (const a) $ listh [1..n])
 -- >>> filtering (const $ True :. True :.  Nil) (1 :. 2 :. 3 :. Nil)
 -- [[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]]
 --
-{- filtering :: -}
-  {- Applicative f => -}
-  {- (a -> f Bool) -}
-  {- -> List a -}
-  {- -> f (List a) -}
-filtering f xs = sequence (map f xs)
-
+filtering ::
+  Applicative f =>
+  (a -> f Bool)
+  -> List a
+  -> f (List a)
+filtering f = foldRight g (pure Nil)
+  where
+    g x ys = lift3 g' (pure x) (f x) (ys)
+      where
+        g' px fx ys | fx == False = ys
+                    | otherwise   = x :. ys
 
 -----------------------
 -- SUPPORT LIBRARIES --

@@ -10,10 +10,12 @@
  */
 
 const log = console.log
+
 class Node {
-  constructor(l, v, r) {
+  constructor(l, k, v, r) {
     this.l = l;
     this.v = v;
+    this.k = k;
     this.r = r;
   }
 }
@@ -24,14 +26,16 @@ class DLL {
     this.last = null;
     this.size = 0;
   }
-  insert(v) {
-    const n = new Node(this.last, v, null);
+
+  insert(k, v) {
+    const n = new Node(this.last, k, v, null);
     if (!this.first) this.first = n;
     if (this.last) this.last.r = n;
     this.last = n;
     this.size++
       return n;
   }
+
   delete(n) {
     if (n === this.first) {
       this.first = n.r;
@@ -57,10 +61,12 @@ class LRUCache {
   get(k) {
     const vs = this.vs,
       ks = this.ks,
-      n = ks[k],
-      v = n.v;
+      n = ks[k];
+    if (!n) return;
+    const v = n.v;
+    if (!n) return;
     vs.delete(n);
-    const newN = vs.insert(v);
+    const newN = vs.insert(k, v);
     ks[k] = newN;
     return v;
   }
@@ -69,19 +75,20 @@ class LRUCache {
     const vs = this.vs,
       ks = this.ks;
     if (vs.size === this.cap) {
+      const fk = vs.first.k
       vs.delete(vs.first)
-      delete ks[k]
+      delete ks[fk]
     }
-    const n = vs.insert(v);
+    const n = vs.insert(k, v);
     ks[k] = n;
     return [k, v];
   }
 }
 
-const lru = new LRUCache(3)
+const lru = new LRUCache(2)
 lru.set(1, 'a')
 lru.set(2, 'b')
-log(lru.get(1))
 lru.set(3, 'c')
+lru.get(2)
 lru.set(4, 'd')
-log(lru.get(2))
+log(lru.get(3))

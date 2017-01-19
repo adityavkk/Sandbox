@@ -6,7 +6,7 @@
 module Course.Monad(
   Monad(..)
 , join
-, (>>=)  
+, (>>=)
 , (<=<)
 ) where
 
@@ -65,11 +65,8 @@ infixr 1 =<<
 -- 15
 (<*>) ::
   Monad f =>
-  f (a -> b)
-  -> f a
-  -> f b
-(<*>) =
-  error "todo: Course.Monad#(<*>)"
+  f (a -> b) -> f a -> f b
+(<*>) fab fa = (\g -> pure . g =<< fa) =<< fab
 
 infixl 4 <*>
 
@@ -82,8 +79,7 @@ instance Monad Id where
     (a -> Id b)
     -> Id a
     -> Id b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance Id"
+  g =<< (Id a) = g a
 
 -- | Binds a function on a List.
 --
@@ -94,8 +90,7 @@ instance Monad List where
     (a -> List b)
     -> List a
     -> List b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance List"
+  (=<<) f = flatMap
 
 -- | Binds a function on an Optional.
 --
@@ -106,8 +101,8 @@ instance Monad Optional where
     (a -> Optional b)
     -> Optional a
     -> Optional b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance Optional"
+  (=<<) f (Empty) = Empty
+  (=<<) f (Full x) = f x
 
 -- | Binds a function on the reader ((->) t).
 --
