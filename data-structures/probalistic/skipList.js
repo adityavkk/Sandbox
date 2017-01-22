@@ -1,5 +1,6 @@
 const log = console.log
 
+// Skip list with insert, delete and get (which gets the actual node from the bottom list)
 class SL {
   constructor() {
     const f = new SLNode(-Infinity, null, null, null, null, null, null, true),
@@ -60,6 +61,7 @@ class SLNode {
       if (this.isBottom || ins) {
         const newNode =
           new SLNode(v, this, this.n, null, null, this.f, this.l, this.f.isBottom)
+        this.n.p = newNode
         this.n = newNode
         const c = flipCoin();
         if (c) {
@@ -110,7 +112,6 @@ class SLNode {
       if (this.d) {
         this.d.delete(v)
       }
-      return
     } else if (this.v < v && this.n.v > v) this.d.delete(v)
     else if (this.v > v) this.p.delete(v)
     else if (this.v < v) this.n.delete(v)
@@ -119,11 +120,12 @@ class SLNode {
 
 const x = new SL()
 x.insert(4)
-x.insert(5)
 x.insert(2)
-log(x.bList.n.v)
-log(x.bList.n.n.v)
-log(x.bList.n.n.n.v)
-log(x.bList.n.n.n.n.v)
+x.insert(5)
+log(x.bList.n.v) // 2
+log(x.bList.n.n.v) // 4
+log(x.bList.n.n.n.v) // 5
 x.delete(4)
-log(x.bList.n.v)
+log(x.bList.n.v) // 2
+log(x.bList.n.n.v) // 5
+log(x.bList.n.n.n.v) // Infinity
