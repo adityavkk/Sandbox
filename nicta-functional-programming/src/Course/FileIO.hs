@@ -71,43 +71,28 @@ the contents of c
 -}
 
 -- /Tip:/ use @getArgs@ and @run@
-main ::
-  IO ()
-main =
-  error "todo: Course.FileIO#main"
+main :: IO ()
+main = run "share/files.txt"
 
-type FilePath =
-  Chars
+type FilePath = Chars
 
 -- /Tip:/ Use @getFiles@ and @printFiles@.
-run ::
-  Chars
-  -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run :: Chars -> IO ()
+run args = do
+  fLines <- readFile args
+  files <- getFiles (lines fLines)
+  printFiles files
 
-getFiles ::
-  List FilePath
-  -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles :: List FilePath -> IO (List (FilePath, Chars))
+getFiles = sequence . (<$>) getFile
 
-getFile ::
-  FilePath
-  -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile :: FilePath -> IO (FilePath, Chars)
+getFile = lift2 (<$>) (,) readFile
 
-printFiles ::
-  List (FilePath, Chars)
-  -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles :: List (FilePath, Chars) -> IO ()
+printFiles = void . sequence . (<$>) (uncurry printFile)
 
-printFile ::
-  FilePath
-  -> Chars
-  -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile :: FilePath -> Chars -> IO ()
+printFile name content = putStrLn ("============ " ++ name) >>
+  putStrLn content
 
