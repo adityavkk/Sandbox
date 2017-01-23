@@ -90,17 +90,14 @@ instance Monad List where
     (a -> List b)
     -> List a
     -> List b
-  (=<<) f = flatMap
+  (=<<) = flatMap
 
 -- | Binds a function on an Optional.
 --
 -- >>> (\n -> Full (n + n)) =<< Full 7
 -- Full 14
 instance Monad Optional where
-  (=<<) ::
-    (a -> Optional b)
-    -> Optional a
-    -> Optional b
+  (=<<) :: (a -> Optional b) -> Optional a -> Optional b
   (=<<) f (Empty) = Empty
   (=<<) f (Full x) = f x
 
@@ -109,12 +106,8 @@ instance Monad Optional where
 -- >>> ((*) =<< (+10)) 7
 -- 119
 instance Monad ((->) t) where
-  (=<<) ::
-    (a -> ((->) t b))
-    -> ((->) t a)
-    -> ((->) t b)
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ((->) t)"
+  (=<<) :: (a -> ((->) t b)) -> ((->) t a) -> ((->) t b)
+  (=<<) f g = \x -> f (g x) x
 
 -- | Flattens a combined structure to a single structure.
 --
@@ -130,11 +123,8 @@ instance Monad ((->) t) where
 -- >>> join (+) 7
 -- 14
 join ::
-  Monad f =>
-  f (f a)
-  -> f a
-join =
-  error "todo: Course.Monad#join"
+  Monad f => f (f a) -> f a
+join ffa = id =<< ffa
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -142,13 +132,8 @@ join =
 --
 -- >>> ((+10) >>= (*)) 7
 -- 119
-(>>=) ::
-  Monad f =>
-  f a
-  -> (a -> f b)
-  -> f b
-(>>=) =
-  error "todo: Course.Monad#(>>=)"
+(>>=) :: Monad f => f a -> (a -> f b) -> f b
+(>>=) fa f = join $ f <$> fa
 
 infixl 1 >>=
 
@@ -157,14 +142,8 @@ infixl 1 >>=
 --
 -- >>> ((\n -> n :. n :. Nil) <=< (\n -> n+1 :. n+2 :. Nil)) 1
 -- [2,2,3,3]
-(<=<) ::
-  Monad f =>
-  (b -> f c)
-  -> (a -> f b)
-  -> a
-  -> f c
-(<=<) =
-  error "todo: Course.Monad#(<=<)"
+(<=<) :: Monad f => (b -> f c) -> (a -> f b) -> a -> f c
+(<=<) f g a = f =<< g a
 
 infixr 1 <=<
 
