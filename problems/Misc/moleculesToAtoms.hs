@@ -8,72 +8,17 @@
 -- "Mg(OH)2" -> Right [("Mg",1),("O",2),("H",2)] -- Magnesium hydroxide
 -- "K4[ON(SO3)2]2" -> Right [("K",4),("O",14),("N",2),("S",4)] -- Fremy's salt
 -- "pie" -> Left "Not a valid molecule"
+
+import AParser
 import Control.Applicative
 import Data.Char
 
-instance Monoid a => Monoid (Either b a) where
-  mempty = Right mempty
-  (Left a) `mappend` _ = Left a
-  _ `mappend` (Left a) = Left a
-  (Right xs) `mappend` (Right ys) = Right (xs `mappend` ys)
-
----------------------------------- The Parser ---------------------------------
-
-newtype Parser a = Parser { runParser :: String -> Maybe (a, String) }
-
-satisfy :: (Char -> Bool) -> Parser Char
-satisfy p = Parser f
-  where
-    f [] = Nothing
-    f (x:xs)
-        | p x       = Just (x, xs)
-        | otherwise = Nothing
-
-char :: Char -> Parser Char
-char c = satisfy (== c)
-
-posInt :: Parser Int
-posInt = Parser f
-  where
-    f xs
-      | null ns   = Nothing
-      | otherwise = Just (read ns, rest)
-      where (ns, rest) = span isDigit xs
-
-inParser f = Parser . f . runParser
-
-first :: (a -> b) -> (a,c) -> (b,c)
-first f (x,y) = (f x, y)
-
-instance Functor Parser where
-  fmap = inParser . fmap . fmap . first
-
-instance Applicative Parser where
-  pure a = Parser (\s -> Just (a, s))
-  (Parser fp) <*> xp = Parser $ \s ->
-    case fp s of
-      Nothing     -> Nothing
-      Just (f,s') -> runParser (f <$> xp) s'
-
-instance Alternative Parser where
-  empty = Parser (const Nothing)
-  Parser p1 <|> Parser p2 = Parser $ liftA2 (<|>) p1 p2
-
-zeroOrMore :: Parser a -> Parser [a]
-zeroOrMore p = oneOrMore p <|> pure []
-
-zeroOrOne :: Parser a -> Parser [a]
-zeroOrOne p = ((:[]) <$> p) <|> pure []
-
-oneOrMore :: Parser a -> Parser [a]
-oneOrMore p = (:) <$> p <*> zeroOrMore p
-
-spaces :: Parser String
-spaces = zeroOrMore (satisfy isSpace)
+data Mol = A { name :: String, num :: Int }
+         | B { mols :: [Mol], num :: Int }
+  deriving (Show)
 
 atomName :: Parser String
-atomName =
-  spaces *> ((:) <$> (satisfy isUpper) <*> (zeroOrMore $ satisfy isLower)) <* spaces
+atomName = spaces *> ((:) <$> (satisfy isUpper) <*> (zeroOrOne $ satisfy isLower)) <* spaces
 
 openBrac :: Parser Char
 openBrac = spaces *> (char '(' <|> char '[') <* spaces
@@ -81,31 +26,36 @@ openBrac = spaces *> (char '(' <|> char '[') <* spaces
 closeBrac :: Parser Char
 closeBrac = spaces *> (char ')' <|> char ']') <* spaces
 
-atom :: Parser Atom
-atom = spaces *> (Atom <$> atomName <*> posInt)
+atom :: Parser Mol
+atom = spaces *> (A <$> atomName <*> (posInt <|> pure 1))
 
-atoms = oneOrMore atom
+block :: Parser Mol
+block = B <$> insideBlock <*> posInt
 
-mol :: Parser [ Atom ]
-mol = atoms <|> block
-
-insideBlock :: Parser [[Atom]]
+insideBlock :: Parser [Mol]
 insideBlock = openBrac *> (oneOrMore mol) <* closeBrac
 
-block = liftA2 times insideBlock posInt
-  where
-    times [] n = []
-    times [as] n = foldr f [] as
-      where
-        f (Atom a m) rs = (Atom a (m * n)) : rs
+mol :: Parser Mol
+mol = atom <|> block
 
-comb [] [] = []
-comb as [] = as
-comb as bl = as ++ bl
+parseMols :: Parser [Mol]
+parseMols = oneOrMore mol
 
-data Atom = Atom String Int
-  deriving (Show)
+combine :: [Mol] -> [(String, Int)]
+combine = foldr (\ a as -> case a of
+                  (A name n) -> (name, n):as
+                  (B xs n)   -> f n (combine xs) ++ as) []
+  where f n = map (\ (name, num) -> (name, num * n))
 
-f :: String -> Either String [(String, Int)]
-f "" = mempty
-f (x0:x1:xs) = undefined
+merge :: [(String, Int)] -> [(String, Int)]
+merge = foldr (\ (s, n) xs -> case lookup s xs of
+                                (Just on) -> (s, on + n) : [x | x <- xs, fst x /= s]
+                                _         -> (s, n) : xs) []
+
+convert (Just (parsed, _)) = Right $ merge $ combine parsed
+convert _                  = Left "Not a valid molecule"
+
+main = do
+  formula <- getLine
+  let parsed = runParser parseMols formula
+  putStrLn $ show (convert parsed)
