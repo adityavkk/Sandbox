@@ -1,4 +1,4 @@
-// Design a data-structure that can extract in constant time
+// Design a data-structure that can extract a median in constant time
 class MedianHeap {
   constructor() {
     this.data = [];

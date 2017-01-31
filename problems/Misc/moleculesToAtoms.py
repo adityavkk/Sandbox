@@ -1,4 +1,4 @@
-def f(cs, es):
+def f(cs, es={}):
     if (len(cs) == 0):
         return es
     cs = atom(cs, es)
@@ -6,7 +6,7 @@ def f(cs, es):
     return f(ncs, nes)
 
 def atom(cs, es):
-    (name, qty, cs) = parseAtom(cs)
+    (name, qty, cs) = parse_atom(cs)
     if(name):
         if(name in es):
             es[name] += qty
@@ -14,7 +14,7 @@ def atom(cs, es):
             es[name] = qty
     return cs
 
-def parseAtom(cs):
+def parse_atom(cs):
     a = cs[0]
     b = cs[1]
     if(a.isupper()):
@@ -30,7 +30,7 @@ def block(cs, es):
         return (cs, es)
     a = cs[0]
     if(a == '('):
-        (cs1, n, rest) = insideBlock(cs[1:])
+        (cs1, n, rest) = inside_block(cs[1:])
         return (rest, merge(es, scale(f(cs1, {}), n)))
     else:
         return (cs, es)
@@ -47,8 +47,7 @@ def merge(a, b):
             r[k] = b[k]
     return r
 
-def insideBlock(cs):
-    m = mismatched(cs, 0, 0)
+def inside_block(cs):
     c_index = mismatched(cs, 0, 0)
     return (cs[:c_index], int(cs[c_index + 1]), cs[c_index + 2:])
 
@@ -69,4 +68,4 @@ def mismatched(cs, count, i):
     else:
         return mismatched(cs, count, i+1)
 
-print(f("H3(H2(O2)4)2", {}))
+print(f("H3(H2(O2)4)2"))
