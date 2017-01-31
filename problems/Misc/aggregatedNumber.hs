@@ -9,3 +9,19 @@
 -- so can you provide a function to check whether a number is an aggregated number
 
 f :: Int -> Bool
+f n = any id [try n p | p <- ps (length s)]
+  where
+    ps l
+      | l > 1 && l < 4 = [(1, 1)]
+      | otherwise      = [(i, j) | i <- [1..(l `div` 2) - 1], j <- [1..(l - i) `div` 2]]
+    s  = show n
+    try n (i, j)
+      | length s < i                                 = False
+      | length s == i + j || null s || length s == i = True
+      | show ijSum == take ijSumLen (drop (i + j) s) = try nI (j, ijSumLen)
+      | otherwise                                    = False
+      where
+        ijSum    = sum [read (take i s), read (take j (drop i s))] :: Int
+        ijSumLen = (length . show) ijSum
+        nI       = (read . drop i . show) n :: Int
+        s        = show n
