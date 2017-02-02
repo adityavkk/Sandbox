@@ -1,4 +1,4 @@
-fibTable = map fib [0..100]
+fibTable = map fib [0..]
 
 mf n = fibTable !! n
 
