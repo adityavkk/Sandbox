@@ -24,12 +24,12 @@ h kws = fromJust $ M.lookup (show kws) memo
     g kws' = M.insert (show kws') (f kws')
 
     f :: [KW] -> Tree KW
-    f kws = fst $ foldl g (Leaf, max + 1) (map ((\ x -> (x, c x)) . r ) lr kws)
+    f kws = fst $ foldl g (Leaf, max + 1) (map ((\ x -> (x, c x)) . r . lr) kws)
       where
         g :: (Tree KW, C) -> (Tree KW, C) -> (Tree KW, C)
         g minT@(mt, mtw) cT@(t, tw)    = if tw < mtw then cT else minT
-        lr :: [KW] -> [(K, W, [KW], [KW])]
-        lr kws = [(k, w, ls, rs) | (k, w) <- kws]
+        lr :: KW -> (K, W, [KW], [KW])
+        lr (k, w) = (k, w, [(k', w') | (k', w') <- kws, k' < k], [(k', w') | (k', w') <- kws, k' > k])
         max = length kws ^ 2 * (maximum . map snd) kws
 
     r :: (K, W, [KW], [KW]) -> Tree KW
