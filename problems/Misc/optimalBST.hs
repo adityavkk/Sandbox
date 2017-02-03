@@ -9,6 +9,8 @@ type W = Int
 type KW = (K, W)
 type C = Int
 
+
+
 aSls :: [KW] -> [[KW]]
 aSls []         = []
 aSls [x]        = [[x]]
