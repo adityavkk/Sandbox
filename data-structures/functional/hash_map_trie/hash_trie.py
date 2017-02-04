@@ -1,12 +1,15 @@
 from functools import reduce
 import math
 
+''' A persistent hash array mapped trie implementation of a map
+    with insert, lookup, delete and collision handling '''
+
 class Trie:
     def __init__(self, size, hs=None):
-        self.hs = hs or list(map(lambda x: Leaf(), [None]*(2**size)))
+        self.hs = hs or [Leaf() for i in range(2**size)]
         self.size = size
 
-    # insert :: Key -> Value -> Hash -> Trie a
+    # insert :: Trie k v -> k -> v -> Hash -> Trie k v
     def insert(self, k, v, rh=None):
         rh = rh or bin_hash(k, self.size)
         nh = rh[:self.size]
@@ -20,7 +23,7 @@ class Trie:
             xs[i] = Trie(self.size, xs[i].hs[:]).insert(k, v, rh[self.size:])
         return Trie(self.size, xs)
 
-    # lookup :: Key -> Hash -> Value
+    # lookup :: Trie k v -> k -> Hash -> Maybe v
     def lookup(self, k, rh=None):
         rh = rh or bin_hash(k, self.size)
         nh = rh[:self.size]
@@ -32,7 +35,7 @@ class Trie:
         else:
             return self.hs[i].lookup(k, rh[self.size:])
 
-    # delete :: Key -> Hash -> Trie a
+    # delete :: Trie k v -> k -> Trie a
     def delete(self, k):
         exists = self.lookup(k)
         if(not exists):
@@ -54,12 +57,15 @@ class Trie:
         else:
             return Trie(self.size, xs)
 
+    # keys :: Trie k v -> [k]
     def keys(self):
         return list(reduce(lambda xs, x: xs + x.keys(), self.hs, []))
 
+    # elems :: Trie k v -> [v]
     def elems(self):
         return list(reduce(lambda xs, x: xs + x.elems(), self.hs, []))
 
+    # is_mt :: Trie k v -> Bool
     def is_mt(self):
         return False
 
@@ -67,18 +73,23 @@ class Leaf:
     def __init__(self, kvs=None):
         self.kvs = kvs
 
+    # insert :: Leaf k v -> k -> v -> Leaf k v
     def insert(self, k, v):
         return Leaf(cons((k, v), self.kvs))
 
+    # delete :: Leaf k v -> k -> Leaf k v
     def delete(self, k):
         return Leaf(delete(k, self.kvs))
 
+    # key :: Leaf k v -> [k]
     def keys(self):
         return list(map(lambda x: x[0], to_array(self.kvs)))
 
+    # elems :: Leaf k v -> [v]
     def elems(self):
         return list(map(lambda x: x[1], to_array(self.kvs)))
 
+    # is_mt :: Leaf k v -> Bool
     def is_mt(self):
         return self.kvs == None
 
