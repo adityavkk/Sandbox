@@ -1,8 +1,8 @@
 from functools import reduce
 import math
 
-''' A persistent hash array mapped trie implementation of a map
-    with insert, lookup, delete and collision handling '''
+''' A persistent hash array mapped trie implementation of a map with insert,
+    lookup, delete and collision handling through a linked list'''
 
 class Trie:
     def __init__(self, size, hs=None):
