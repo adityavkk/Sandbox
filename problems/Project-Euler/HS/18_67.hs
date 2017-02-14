@@ -20,7 +20,8 @@ f' xs = lup memo (0,0)
     g :: (Int, Int) -> Int
     g (i, j)
       | i == length xs - 1 = x
-      | otherwise          = max (lup memo ((i + 1),  j)) (lup memo ((i + 1), (j + 1))) + x
+      | otherwise          =
+          max (lup memo ((i + 1),  j)) (lup memo ((i + 1), (j + 1))) + x
         where x = hm M.! (i, j)
 
 lup = (M.!)
@@ -30,13 +31,14 @@ pHM xs = M.fromList [((i, j), xs !! i !! j) | i <- [0..lxs], j <- [0..i]]
   where
     lxs = length xs - 1
 
+-- Needs a pyramid.txt file found at the project euler page for problem 67
 t'' :: IO [[Int]]
 t'' = readFile "./pyramid.txt" >>= parse
   where
     parse :: String -> IO [[Int]]
-    parse s = return $ map (\ l -> map read $ words l) $ lines s
+    parse s = return $ map (map read . words) $ lines s
 
-main = f' <$> t'' >>= print
+main = f <$> t'' >>= print
 
 ----------------------- Sample Pyramids --------------------------------
 

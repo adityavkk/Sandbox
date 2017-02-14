@@ -5,8 +5,8 @@ import Graphics.Gloss
 window :: Display
 window = InWindow "Pong" (width, width) (offset, offset)
 
-width = 300
-offset = 100
+width = 600
+offset = 200
 
 background :: Color
 background = black
@@ -19,15 +19,15 @@ data PongGame = Game { ballLoc :: (Float, Float)
 
 initialState :: PongGame
 initialState = Game { ballLoc = (-10, 30)
-                    , ballVel = (-20, 0)
+                    , ballVel = (-90, 0)
                     , player1 = 40
                     , player2 = -80
                     }
 
 render :: PongGame -> Picture
 render game = pictures [ball, walls, ball',
-                        mkPaddle rose 120 $ player1 game,
-                        mkPaddle orange (-120) $ player2 game]
+                        mkPaddle rose (0.9 * fromIntegral width / 2) $ player1 game,
+                        mkPaddle orange ((-0.9) * fromIntegral width / 2) $ player2 game]
   where
     ball      = uncurry translate (ballLoc game) $ color ballColor $ circleSolid 10
     ballColor = dark red
@@ -38,10 +38,10 @@ render game = pictures [ball, walls, ball',
     wall offset =
       translate 0 offset $
         color wallColor $
-          rectangleSolid 270 10
+          rectangleSolid (0.9 * fromIntegral width) (0.04 * fromIntegral width)
 
     wallColor = greyN 0.5
-    walls = pictures [wall 150, wall (-150)]
+    walls = pictures [wall (fromIntegral width / 2), wall (fromIntegral width / (-2))]
 
     mkPaddle :: Color -> Float -> Float -> Picture
     mkPaddle col x y = pictures
@@ -82,8 +82,8 @@ wallBounce game = game { ballVel = (vx, vy') }
 paddleCollision :: Position -> Radius -> Bool
 paddleCollision (x, y) rad = leftCollision || rightCollision
   where
-    leftCollision  = (x + rad) <= -140
-    rightCollision = x + rad >= 10
+    leftCollision  = (x - rad) <= -fromIntegral width / 2
+    rightCollision = x + rad >= fromIntegral width / 2
 
 paddleBounce :: PongGame -> PongGame
 paddleBounce game
@@ -92,7 +92,7 @@ paddleBounce game
     where
       rad        = 10
       (vx, vy)   = ballVel game
-      (vx', vy') = (vx, -vy)
+      (vx', vy') = (-vx, vy)
 
 fps :: Int
 fps = 60
