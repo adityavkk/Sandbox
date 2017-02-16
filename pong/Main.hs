@@ -10,8 +10,8 @@ width        = 600
 offset       = 200
 tenOffset    = 0.9 * fromIntegral width / 2
 twentyOffset = 0.8 * fromIntegral width / 2
-paddleW      = 26
-paddleH      = 86
+paddleW      = 20
+paddleH      = 80
 
 background :: Color
 background = black
@@ -40,12 +40,16 @@ initialState = Game { ballLoc = (-10, 60)
                     }
 
 render :: PongGame -> Picture
-render game = pictures [ball, walls,
-                        mkPaddle rose tenOffset $ player1 game,
-                        mkPaddle orange (-tenOffset) $ player2 game]
+render game = pictures [centerLine, ball, walls,
+                        mkPaddle offWhite tenOffset $ player1 game,
+                        mkPaddle offWhite (-tenOffset) $ player2 game]
   where
-    ball      = uncurry translate (ballLoc game) $ color ballColor $ circleSolid 10
+    centerLine = color offWhite $ rectangleSolid 2 (fromIntegral width)
+
+    ball      = uncurry translate (ballLoc game) $ color offWhite $ rectangleSolid 10 10
     ballColor = dark red
+
+    offWhite = dim white
 
     wall :: Float -> Picture
     wall offset =
@@ -57,12 +61,9 @@ render game = pictures [ball, walls,
     walls = pictures [wall (fromIntegral width / 2), wall (fromIntegral width / (-2))]
 
     mkPaddle :: Color -> Float -> Float -> Picture
-    mkPaddle col x y = pictures
-      [ translate x y $ color col $ rectangleSolid paddleW paddleH
-      , translate x y $ color paddleColor $ rectangleSolid 20 80
-      ]
+    mkPaddle col x y =
+      translate x y $ color offWhite (rectangleSolid paddleW paddleH)
 
-    paddleColor = light (light blue)
 
 moveStuff :: Float -> PongGame -> PongGame
 moveStuff secs game
