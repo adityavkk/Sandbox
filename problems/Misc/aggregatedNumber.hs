@@ -8,7 +8,7 @@
 -- 112112224, because 112+112=224 
 -- so can you provide a function to check whether a number is an aggregated number
 
-x = 5 /= 10 
+x = 5 /= 10
 
 f :: Int -> Bool
 f n = any id [try n p | p <- ps (length s)]

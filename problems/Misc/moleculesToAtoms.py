@@ -69,3 +69,4 @@ def mismatched(cs, count, i):
         return mismatched(cs, count, i+1)
 
 print(f("H3(H2(O2)4)2"))
+[

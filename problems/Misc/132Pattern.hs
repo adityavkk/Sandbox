@@ -17,7 +17,6 @@ f ns = snd $ foldl g ([], False) $ reverse ns
       | x > y      = (x:xs, r)
       | otherwise  = (xs, r)
 
-
 xs = [1,2,3,4] :: [Int]
 ys = [3,1,4,2] :: [Int]
 zs = [ 9, 11, 8, 9, 10, 7, 9 ] :: [Int]
