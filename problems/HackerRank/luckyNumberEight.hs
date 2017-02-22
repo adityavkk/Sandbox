@@ -18,6 +18,8 @@ toList = map (read . (: [])) . show
 fromList :: [Integer] -> Integer
 fromList = read . (>>= show)
 
+-- More optimal solution
+
 c :: Integer -> Integer -> Integer
 c n k = fact n `div` (fact (n - k) * fact k)
   where
