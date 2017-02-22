@@ -5,6 +5,9 @@
 import Control.Arrow
 import Data.List hiding (tails)
 
+-- Brute Force
+f' = length . filter d . map fromList . tail . subsequences . toList
+
 d :: Integer -> Bool
 d 0 = False
 d n = (== 0) . (`mod` 8) $ n
@@ -28,17 +31,16 @@ numSS xs = sum . map (c n) $ [1..n]
 
 -- All the subsequences of length 3 that are div by 8 starting with first number
 threeSS :: [Integer] -> [Integer]
-threeSS (x:xs) = filter d $ map fromList $ (\ ys -> x:ys) <$> (nub $ twoSS xs)
+threeSS (x:xs) = filter d $ map fromList $ (\ ys -> x:ys) <$> twoSS xs
 
 twoSS :: [Integer] -> [[Integer]]
 twoSS xs = zip xs (tail $ tails xs) >>= (\ (y, ys) -> map (\ y' -> [y, y']) ys) 
 
-f n = one + two + threeOrMore
+f n = one n + two n + threeOrMore n
   where
-    one   = undefined
-    two   = undefined
-    threeOrMore = (sum . map g . filter (\ (_, xs) -> length xs >= 3) . zipHT) n
-    zipHT       = uncurry zip . (heads &&& tails) . toList
+    one   = toInteger . length . filter d . toList
+    two   = toInteger . length . filter d . map fromList . twoSS . toList
+    threeOrMore = sum . map g . filter (\ (_, xs) -> length xs >= 3) . zipHT
 
     g :: ([Integer], [Integer]) -> Integer
     g (xs, ys) = numSS xs * numThree + numThree
@@ -51,3 +53,4 @@ heads = scanl snoc []
 tails :: [a] -> [[a]]
 tails = foldr (\ x ts@(t:_) -> (x:t):ts) [[]]
 
+zipHT = uncurry zip . (heads &&& tails) . toList
