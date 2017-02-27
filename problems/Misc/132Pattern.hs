@@ -32,4 +32,24 @@ ys = [3,1,4,2] :: [Int]
 zs = [ 9, 11, 8, 9, 10, 7, 9 ] :: [Int]
 as = [1,0,1,-4,-3] :: [Int]
 bs = [0, 1,3,2,10] :: [Int]
-cs = [10, 20, 6, 8, 1, 3, 12] :: [Int]
+cs = [10, 20, 6, 8, 1, 3, 12, 20] :: [Int]
+
+-- Not working (attempt at a top down approach)
+
+f' :: [Int] -> [(Int, Int, Int)]
+f' xs = zip3 (pMinl xs) xs (pMinr xs)
+  {- where -}
+    {- g = foldr (\ (mx, x, mn) r -> (mn < x && mx < mn) || r) False -}
+
+pMinl [] = []
+pMinl (x:xs) = reverse $ fst $ foldl 
+  (\(ys, x) x' -> if x' < x then (x:ys, x') else (x:ys, x)) ([x], x) xs
+
+pMinr [] = []
+pMinr xs = fst $ foldr
+  (\ x' (ys, x) -> case x of
+                     Nothing -> (x':ys, Just x')
+                     Just y  -> if y < x'
+                                then (y:ys, Just y)
+                                else (y:ys, Just x')) ([], Nothing) xs
+  
