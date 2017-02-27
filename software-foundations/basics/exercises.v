@@ -247,3 +247,186 @@ Proof.
   - reflexivity.
   - reflexivity. Qed.
 
+Theorem negb_involutive : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b. destruct b.
+  - reflexivity.
+  - reflexivity. Qed.
+
+Theorem andb_commutative : forall b c,
+  andb b c = andb c b.
+Proof.
+  intros b c. destruct b.
+  - destruct c.
+    + reflexivity.
+    + reflexivity.
+  - destruct c.
+    + reflexivity.
+    + reflexivity.
+Qed.
+
+Theorem andb3_exchange: forall b c d,
+  andb (andb b c) d = andb (andb b d) c.
+Proof.
+  intros b c d. destruct b.
+  - destruct c.
+    { destruct d.
+      - reflexivity.
+      - reflexivity. }
+    { destruct d.
+      - reflexivity.
+      - reflexivity. }
+  - destruct c.
+    { destruct d.
+      - reflexivity.
+      - reflexivity. }
+    { destruct d.
+        - reflexivity.
+        - reflexivity. }
+Qed.
+
+(*Exercise andb_true_elim2*)
+
+Theorem andb_true_elim2: forall b c : bool,
+  andb b c = true -> c = true.
+Proof.
+  intros [] [].
+  - intros []. reflexivity.
+  - intros []. reflexivity.
+  - intros []. reflexivity.
+  - intros []. reflexivity.
+Qed.
+
+(*Exercise zero_nbeq_plus_1*)
+
+Theorem zero_nbeq_plus_1 : forall n : nat,
+  beq_nat 0 (n + 1) = false.
+Proof.
+  intros [|n'].
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+(*Exercise starsM*)
+Theorem identity_fn_applied_twice :
+  forall (f : bool -> bool),
+    (forall (x : bool), f x = x) ->
+    forall (b : bool), f (f b) = b.
+Proof.
+  intros f H b.
+  rewrite -> H.
+  rewrite <- H.
+  reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool),
+    (forall (x : bool), f x = negb x) ->
+    forall (b : bool), f (f b) = b.
+Proof.
+  intros f H [].
+  - rewrite -> H.
+    rewrite -> H.
+    reflexivity.
+  - rewrite -> H.
+    rewrite -> H.
+    reflexivity.
+Qed.
+
+(*Exercise andb_eq_orb*)
+Theorem true_or :
+  forall (b : bool),
+    (orb true b) = true.
+Proof.
+  intros [].
+  - reflexivity.
+  - reflexivity. 
+Qed.
+
+Theorem true_and :
+  forall (b : bool), (andb true b = true) -> (b = true).
+Proof.
+  intros b H.
+  rewrite <- H.
+  simpl. reflexivity.
+Qed.
+
+Theorem andb_eq_orb :
+  forall (b c : bool),
+  (andb b c = orb b c) ->
+  b = c.
+Proof.
+  intros [].
+  - simpl.
+    intros c H.
+    rewrite <- H.
+    reflexivity.
+  - simpl.
+    intros c H.
+    rewrite <- H.
+    reflexivity.
+Qed.
+
+(*Exercise binary*)
+Inductive bin : Type :=
+  | Z  : bin
+  | T  : bin -> bin
+  | ST : bin -> bin.
+
+Fixpoint incr (n : bin) : bin :=
+  match n with
+  | Z => ST Z
+  | T n' => ST n'
+  | ST n' => T (incr n')
+  end.
+
+Fixpoint bin_to_nat (n : bin) : nat :=
+  match n with
+  | Z => O
+  | T n' => 2 * (bin_to_nat n')
+  | ST n' => 2 * (bin_to_nat n') + 1
+  end.
+
+Example test_bin_incr1: (bin_to_nat (incr Z)) = 1.
+Proof. simpl. reflexivity. Qed.
+
+Example test_bin_incr2: (bin_to_nat (incr (T (ST Z)))) = 3.
+Proof. simpl. reflexivity. Qed.
+
+Example test_bin_incr3: ((bin_to_nat (T (ST Z))) + 1) = 3.
+Proof. simpl. reflexivity. Qed.
+
+Example test_bin_incr4: ((bin_to_nat (T (ST (ST Z))) + 1)) = 7.
+Proof. simpl. reflexivity. Qed.
+
+Example test_bin_incr5: (bin_to_nat (incr (ST (ST (ST (ST Z)))))) = 16.
+Proof. simpl. reflexivity. Qed.
+
+(*Exercise decreasing*)
+Definition minus_1 (n : nat) : nat :=
+  match n with
+  | O => O
+  | S n => n
+  end.
+
+Example minus_1_from_3 : (minus_1 3) = 2.
+Proof. simpl. reflexivity. Qed.
+
+Fixpoint fib (n : nat) : nat :=
+  match n with
+  | O => 1
+  | 1 => 1
+  | S n' => fib (n') + fib (n' - 1)
+  end.
+
+Example fib_test: (fib 3) = 3.
+Proof. simpl. reflexivity. Qed.
+
+Example neg_nat: 10 - 100 = 0.
+Proof. simpl. reflexivity. Qed.
+(* Fixpoint f (n : nat) : nat := *)
+  (* match n with *)
+  (* | O => 1 *)
+  (* | S n' => f (n' * 2 - n' * 100) *)
+  (* end. *)
