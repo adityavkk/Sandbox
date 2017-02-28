@@ -308,7 +308,7 @@ Proof.
   - reflexivity.
 Qed.
 
-(*Exercise starsM*)
+(*Exercise identity_fn_applied_twice*)
 Theorem identity_fn_applied_twice :
   forall (f : bool -> bool),
     (forall (x : bool), f x = x) ->

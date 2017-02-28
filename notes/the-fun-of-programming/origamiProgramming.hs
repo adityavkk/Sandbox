@@ -47,7 +47,19 @@ isort = foldL insert Nil
       | otherwise = Cons x (insert y xs)
 
 -- 3.4 write insert from isort as a foldL
-insert2 y xs = if fst fold then snd fold else Cons y xs
+
+insert1 y xs = if fst fold then snd fold else Cons y xs
   where fold = foldL (\ x (r, ys)  -> if y > x && not r
                                       then (True, x `Cons` (y `Cons` ys))
                                       else (r, x `Cons` ys)) (False, Nil) xs
+
+isort1 :: Ord a => List a -> List a
+isort1 = foldL insert1 Nil
+
+-- 3.5 paramorphism
+paraL :: (a -> (List a, b) -> b) -> b -> List a -> b
+paraL f e Nil         = e
+paraL f e (Cons x xs) = f x (xs, paraL f e xs)
+
+insert0 :: Ord a => a -> List a -> List a
+insert 0 = undefined
