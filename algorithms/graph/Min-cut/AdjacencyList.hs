@@ -29,9 +29,9 @@ findVertex g@(AL vs) a
   | belongs g a = Just $ head [v | v <- vs, value v == a]
   | otherwise   = Nothing
 
-neighbors :: Eq a => AL a -> a -> Maybe [Vertex a]
+neighbors :: (Eq a, Show a) => AL a -> a -> Maybe [a]
 neighbors (AL vs) a
-  | not $ null x  = Just [to e | e <- es (head x)]
+  | not $ null x  = Just [value $ to e | e <- es (head x)]
   | otherwise     = Nothing
   where x = [y | y <- vs, value y == a]
 
@@ -68,6 +68,8 @@ getEdgeWeight g@(AL vs) a b
   | adjacent g a b = getW . head . filter (\ e -> value (to e) == b) $ es va
   | otherwise      = 0
   where (Just va) = findVertex g a
+
+empty = AL []
 
 g0 = foldl addVertex (AL []) [V x [] | x <- [1..6]]
 g1 = addEdge (addEdge g0 2 3 30) 2 5 20
