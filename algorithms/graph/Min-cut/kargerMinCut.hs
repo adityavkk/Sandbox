@@ -1,41 +1,57 @@
+{-# LANGUAGE FlexibleContexts #-}
 -- The corresponding file contains the adjacency list representation of a simple 200 node undirected graph.
 -- The following algorithm runs the randomized contraction algorithm for the min cut problem and uses
 -- it on the above graph to compute the min cut.
 
-import AdjacencyList
+import qualified Data.HashMap.Lazy as H
 import Control.Monad
 import System.Random
 
-parseLines :: String -> [[Int]]
-parseLines = map (map read . words) . lines
+type AL     = H.HashMap Vertex [Vertex]
+type Vertex = Int
+type Edge   = (Vertex, Vertex)
 
-parseAL :: AL Int -> [[Int]] -> AL Int
-parseAL al []       = al
-parseAL al (es:ess) = parseAL (foldr (\ e al' -> addEdge al' v e 0) al es') ess
-  where v   = head es
-        es' = tail es
+contract :: AL -> Edge -> AL
+contract al (vf, vt) = (H.delete vt . removeTFF . addFT . removeTT . addTF) al
+  where
+    addTF al    = add (al H.! vt) [vf] al
+    removeTT al = remove [vt] (al H.! vt) al
+    addFT al    = add [vf] (al H.! vt) al
+    removeTFF   = remove [vt, vf] [vf]
 
-unconnectedAL :: Int -> AL Int
-unconnectedAL n = foldr (\ x al -> addVertex al (V x [])) empty [1..n]
+    -- remove xs from ys
+    remove :: [Vertex] -> [Vertex] -> AL -> AL
+    remove xs ys al = foldr (H.adjust (filter (not . flip elem xs))) al ys
 
-parse200AL :: String -> AL Int
-parse200AL = parseAL (unconnectedAL 200) . parseLines
+    -- add xs to ys
+    add :: [Vertex] -> [Vertex] -> AL -> AL
+    add xs ys al = foldr (H.adjust (xs ++ )) al ys
 
-graph :: IO (AL Int)
-graph = parse200AL <$> readFile "./kargerMinCut.txt"
+contraction :: AL -> IO Int
+contraction al
+  | len < 2   = return 0
+  | len == 2  = return (length . snd . head $ H.toList al)
+  | otherwise = liftM2 contract (return al) (randomE al) >>= contraction
+  where
+    len = length $ H.keys al
 
-contraction :: AL Int -> IO Int
-contraction (AL [])       = return 0
-contraction (AL [v])      = return 0
-contraction (AL [v0, v1]) = return (length $ es v0)
-contraction (AL vs)       = do
-                          vi <- randomRIO (0, len)
-                          ei <- randomRIO (0, lenE)
-                          gt
-  where len  = length vs
-        lenE = (length . es) v
-        e    = (!! ei . es) v
-        v    = vs !! vi
-        lv   = from e
-        rv   = to e
+minCut :: Int -> AL -> IO Int
+minCut n al = minimum <$> replicateM n (contraction al)
 
+randomE :: AL -> IO Edge
+randomE al = do
+            (k, vs) <- oneOf $ H.toList al
+            (\ v -> (k, v)) <$> oneOf vs
+
+oneOf :: [a] -> IO a
+oneOf xs = (xs !!) <$> randomRIO (0, length xs - 1)
+
+parseAL :: String -> AL
+parseAL = f .  map (map read . words) . lines
+  where
+    f :: [[Vertex]] -> AL
+    f = foldr (\ (x:xs) al -> H.insert x xs al) H.empty
+
+graph = parseAL <$> readFile "./kargerMinCut.txt"
+
+main = graph >>= minCut 50
