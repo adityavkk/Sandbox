@@ -1,11 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
--- The corresponding file contains the adjacency list representation of a simple 200 node undirected graph.
--- The following algorithm runs the randomized contraction algorithm for the min cut problem and uses
--- it on the above graph to compute the min cut.
 
 import qualified Data.HashMap.Lazy as H
 import Control.Monad
 import System.Random
+import Control.Concurrent.Async
 
 type AL     = H.HashMap Vertex [Vertex]
 type Vertex = Int
@@ -36,7 +34,7 @@ contraction al
     len = length $ H.keys al
 
 minCut :: Int -> AL -> IO Int
-minCut n al = minimum <$> replicateM n (contraction al)
+minCut n al = minimum <$> mapConcurrently contraction (replicate n al)
 
 randomE :: AL -> IO Edge
 randomE al = do
