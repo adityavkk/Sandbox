@@ -10,5 +10,3 @@ heads xs = tail $ scanl snoc [] xs
 snoc xs x = xs ++ [x]
 
 f xs = maximum (map l (heads xs))
-
-f (xs ++ ys) = join (f xs) (f ys)

@@ -37,4 +37,4 @@ function maxProfitIter(boughtAt, completed, currProfit = 0, i, sps) {
 
 const maxProfit = sps => maxProfitIter(0, 0, 0, 0, sps)
 
-console.log(maxProfit([1])) // => 11 :-)
+console.log(maxProfit([7, 1, 5, 3, 6, 4])) // => 11 :-)
