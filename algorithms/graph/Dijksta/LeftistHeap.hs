@@ -15,8 +15,6 @@ class Heap h where
   findMin   :: (Ord a) => h a -> Maybe a
   deleteMin :: (Ord a) => h a -> (Maybe a, h a)
 
-  delete    :: (Ord a) => h a -> a -> h a
-
   fromList  :: (Ord a) => [a] -> h a
 
 data (Ord a) => LH a  = E
