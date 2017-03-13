@@ -2,7 +2,7 @@
 
 module LeftistHeap where
 import Prelude hiding (pure)
-import Data.List hiding (insert)
+import Data.List hiding (insert, delete)
 
 class Heap h where
   empty     :: (Ord a) => h a
@@ -14,6 +14,8 @@ class Heap h where
 
   findMin   :: (Ord a) => h a -> Maybe a
   deleteMin :: (Ord a) => h a -> (Maybe a, h a)
+
+  delete    :: (Ord a) => h a -> a -> h a
 
   fromList  :: (Ord a) => [a] -> h a
 

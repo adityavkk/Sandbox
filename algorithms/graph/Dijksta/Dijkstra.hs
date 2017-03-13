@@ -1,44 +1,70 @@
--- The file contains an adjacency list representation of an undirected weighted 
--- graph with 200 vertices labeled 1 to 200. Each row consists of the node 
--- tuples that are adjacent to that particular vertex along with the length of 
--- that edge. For example, the 6th row has 6 as the first entry indicating that 
--- this row corresponds to the vertex labeled 6. The next entry of this row 
--- "141,8200" indicates that there is an edge between vertex 6 and vertex 141 
--- that has length 8200. The rest of the pairs of this row indicate the other 
--- vertices adjacent to vertex 6 and the lengths of the corresponding edges.
--- 
--- Your task is to run Dijkstra's shortest-path algorithm on this graph, using 1 
--- (the first vertex) as the source vertex, and to compute the shortest-path 
--- 1distances between 1 and every other vertex of the graph. If there is no path 
--- between a vertex v and vertex 1, we'll define the shortest-path distance between 
--- 1 and v to be 1000000.
--- 
--- You should report the shortest-path distances to the following ten vertices, 
--- in order: 7,37,59,82,99,115,133,165,188,197. You should encode the distances as
--- a comma-separated string of integers. So if you find that all ten of these 
--- vertices except 115 are at distance 1000 away from vertex 1 and 115 is 2000 
--- distance away, then your answer should be 1000,1000,1000,1000,1000,2000,1000,
--- 1000,1000,1000. Remember the order of reporting DOES MATTER, and the string 
--- should be in the same order in which the above ten vertices are given. The 
--- string should not contain any spaces. Please type your answer in the space 
--- provided.
-
 module Dijkstra where
 
-import LeftistHeap
+import qualified LeftistHeap as Q
 import qualified Data.HashMap.Lazy as H
 
-type AL            = H.HashMap Vertex [(Vertex, Weight)]
+data Distance      = Infinity | D Int deriving (Show)
+data Shortest      = S { v       :: Vertex
+                       , d       :: Distance
+                       , p       :: Prev
+                       } deriving (Show)
+data ShortestPaths = SP Int (H.HashMap Vertex Shortest) deriving (Show)
+data AL            = AL { size :: Int
+                        , al   :: H.HashMap Vertex [(Vertex, Weight)] 
+                        } deriving (Show)
+
 type Vertex        = Int
 type Weight        = Int
-type ShortestPaths = (Vertex, H.HashMap Vertex Weight)
+type Prev          = Maybe Vertex
+
+instance Eq Distance where
+  Infinity == Infinity = True
+  (D a)    == (D b)    = a == b
+
+instance Ord Distance where
+  compare Infinity Infinity = EQ
+  compare Infinity _        = GT
+  compare _ Infinity        = LT
+  compare (D a) (D b)       = compare a b
+
+  Infinity <= Infinity      = True
+  _ <= Infinity             = True
+  Infinity <= _             = False
+  (D a) <= (D b)            = a <= b
+
+instance Eq Shortest where
+  (S _ d _) == (S _ d' _) = d == d'
+
+instance Ord Shortest where
+  compare (S _ d _) (S _ d' _) = compare d d'
+
+neighbors :: Vertex -> AL -> [(Vertex, Weight)]
+neighbors v (AL _ al) = al H.! v
 
 dijkstra :: Vertex -> AL -> ShortestPaths
-dijkstra v al = (,) . v ()
+dijkstra vert adj = relaxer adj q (SP 0 H.empty)
+  where
+    q = Q.fromList
+        . map (\ k -> if k == vert
+                      then S k (D 0) Nothing 
+                      else S k Infinity Nothing)
+        . H.keys $ (al adj)
+
+    relaxer :: AL -> Q.LH Shortest -> ShortestPaths -> ShortestPaths
+    relaxer al' q sp@(SP s hm)
+      | size al' == 0 = sp
+      | otherwise     = relaxer (AL (size al' - 1) (H.delete (v u) (al al')))
+                                (relax q' (neighbors (v u) al'))
+                                (SP (s + 1) (H.insert (v u) u hm))
+      where (Just u, q') = Q.deleteMin q
+
+            relax :: Q.LH Shortest -> [(Vertex, Weight)] -> Q.LH Shortest
+            relax = foldr (\ (v, w) q' -> Q.insert (S v (D (d u + w)) (Just (v u))) q')
 
 parseAL :: String -> AL
-parseAL = foldr ((\ (k, es) al -> H.insert k es al) . parseLine . words) 
-                H.empty
+parseAL = foldr ((\ (k, es) (AL s al) -> (AL (s + 1) (H.insert k es al)))
+                                         . parseLine . words)
+                (AL 0 H.empty)
           . lines
   where
     parseLine :: [String] -> (Vertex, [(Vertex, Weight)])
@@ -49,4 +75,5 @@ parseAL = foldr ((\ (k, es) al -> H.insert k es al) . parseLine . words)
     tupMap :: (a -> b) -> (a, a) -> (b, b)
     tupMap f (a, b) = (f a , f b)
 
-graph = dijkstra 1 . parseAL <$> readFile "./dijkstraData.txt"
+graph :: IO (AL)
+graph = parseAL <$> readFile "./dijkstraData.txt"
