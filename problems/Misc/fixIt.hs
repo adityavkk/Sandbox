@@ -1,8 +1,6 @@
 module Fixit where
 import Prelude hiding (reverse, foldr)
 
--- implement foldr and reverse without recursion
-
 fix :: (a -> a) -> a
 fix f = let x = f x in x
 
@@ -15,4 +13,3 @@ foldr' f g z (x:xs) = g x (f g z xs)
 
 foldr = fix foldr'
 reverse = fix reverse'
-

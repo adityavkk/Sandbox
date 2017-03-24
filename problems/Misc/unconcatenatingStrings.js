@@ -11,18 +11,6 @@
  * Parsed: JILL and JACK are siblings
  */
 
-/* Approaches:
- * just for the minimize num of unique words problem (need to add tracing)
- *
- * if s is one char:
- *   in dict => 0
- *   else => 1
- * min of:
- *   for all ss starting at x0:
- *     if ssi in dict => f (rest)
- *     else => 1 + f (rest)
- */
-
 const log = console.log
 const dict = new Set(['ill', 'and', 'are', 'siblings', 'bling', 'blings', 'land'])
 const memo = {}

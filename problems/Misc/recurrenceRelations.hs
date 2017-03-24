@@ -32,7 +32,7 @@ evaluateFunction f n = evalState (cache f' n) H.empty
              Left v           -> return v
              Right (xs, oper) -> oper <$> sequence (cache f' <$> xs)
 
-cache :: (MonadState (H.HashMap k v) m, Ord k, Hashable k) => 
+cache :: (MonadState (H.HashMap k v) m, Ord k, Hashable k) =>
   (k -> m v) ->
   k ->
   m v
