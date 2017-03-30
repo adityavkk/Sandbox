@@ -1,3 +1,5 @@
+/* Utility functions */
+
 function log(x) {
   console.log(x)
   return x
@@ -50,6 +52,65 @@ function printList(ll) {
   return car(ll) + ' ' + printList(cdr(ll))
 }
 
+/* Queue */
+
+class Q {
+  constructor() {
+    this.q = []
+  }
+
+  enQ(...x) {
+    this.q.push(...x)
+    return this
+  }
+
+  deQ() {
+    return this.q.shift()
+  }
+
+  mt() {
+    return this.q.length === 0
+  }
+}
+
+/* Adjacency List */
+
+// AdjacencyList :: AL a
+class AdjacencyList {
+  constructor() {
+    // al :: HashMap a (Set a)
+    this.al = {}
+  }
+
+  //insert :: Vertex -> Vertex -> AL
+  insert(v, w) {
+    const al = this.al
+    if (!al[v])
+      al[v] = new Set()
+    if (w !== undefined) {
+      if (!al[w])
+        al[w] = new Set()
+      al[v].add(w)
+    }
+    return this
+  }
+
+  // vertices :: [Vertex]
+  vertices() {
+    return Object.keys(this.al)
+  }
+
+  // neighbors :: Vertex -> [Vertex]
+  neighbors(v) {
+    return [...this.al[v]]
+  }
+
+  // connected :: Vertex -> Vertex -> Bool
+  connected(v, w) {
+    return this.al[v].has(w)
+  }
+}
+
 /***************************************************************************/
 
 module.exports = {
@@ -62,5 +123,7 @@ module.exports = {
   uncons,
   list,
   printList,
-  log
+  log,
+  AdjacencyList,
+  Q
 }
