@@ -73,6 +73,27 @@ class Q {
   }
 }
 
+/* BT */
+
+class Node {
+  constructor(l, v, r) {
+    this.l = l
+    this.r = r
+    this.v = v
+    this.leaf = false
+  }
+}
+
+class Leaf {
+  constructor() {
+    this.l = null
+    this.r = null
+    this.v = null
+    this.leaf = true
+  }
+
+}
+
 /* Adjacency List */
 
 // AdjacencyList :: AL a
@@ -125,5 +146,7 @@ module.exports = {
   printList,
   log,
   AdjacencyList,
-  Q
+  Q,
+  Leaf,
+  Node
 }
