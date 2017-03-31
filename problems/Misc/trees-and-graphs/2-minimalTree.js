@@ -21,4 +21,6 @@ const f = (xs, i = 0, j = xs.length - 1) => {
   return new Node(f(xs, i, ci - 1), xs[ci], f(xs, ci + 1, j))
 }
 
-log(f([1, 2, 3, 4, 5]))
+const bt = f([1, 2, 3, 4, 5, 6, 7])
+
+module.exports = bt
