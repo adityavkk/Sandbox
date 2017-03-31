@@ -76,10 +76,11 @@ class Q {
 /* BT */
 
 class Node {
-  constructor(l, v, r) {
+  constructor(l, v, r, p = null) {
     this.l = l
     this.r = r
     this.v = v
+    this.p = p
     this.leaf = false
   }
 }
@@ -89,6 +90,7 @@ class Leaf {
     this.l = null
     this.r = null
     this.v = null
+    this.p = null
     this.leaf = true
   }
 
