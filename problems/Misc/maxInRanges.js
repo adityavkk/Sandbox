@@ -42,26 +42,21 @@ class MaxStack {
     this.data = []
     this.maxes = [-Infinity]
   }
-
   push(x) {
     this.data.push(x)
     if (x > this.max()) this.maxes.push(x)
     else this.maxes.push(this.max())
   }
-
   pop() {
     this.maxes.pop()
     return this.data.pop()
   }
-
   max() {
     return this.maxes[this.maxes.length - 1]
   }
-
   mt() {
     return this.data.length === 0
   }
-
 }
 
 class MaxQueue {
@@ -69,12 +64,10 @@ class MaxQueue {
     this.s1 = new MaxStack()
     this.s2 = new MaxStack()
   }
-
   enqueue(x) {
     this.s1.push(x)
     return this
   }
-
   dequeue() {
     if (this.mt()) return
     if (this.s2.mt()) {
@@ -82,11 +75,9 @@ class MaxQueue {
     }
     return this.s2.pop()
   }
-
   max() {
     return this.s1.max() > this.s2.max() ? this.s1.max() : this.s2.max()
   }
-
   mt() {
     return this.s1.mt() && this.s2.mt()
   }
