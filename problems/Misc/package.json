@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "immutable": "^3.8.1",
     "murmurhash-native": "^3.2.0",
     "murmurhash3js": "^3.0.1"
   }
