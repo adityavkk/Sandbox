@@ -26,6 +26,7 @@ dfs :: Matrix -> Vertex -> SeenSet -> SeenSet
 - return seen
 """
 from functools import *
+from sys import stdin
 
 def f(x):
     m = parse(x)
@@ -50,4 +51,4 @@ def parse(x):
     return [list(map(int, y)) for y in xs]
 
 m1 = '4\n1101\n1110\n0110\n1001'
-m2 = '5\n10000\n01000\n00100\n00010\n00001'
+m3 = '4\n0000000000\n0000000000\n0000000000\n0000000000\n0000000000\n0000000000\n0000000000\n0000000000\n00000000000000\n0000000000'
