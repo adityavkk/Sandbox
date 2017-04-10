@@ -50,4 +50,6 @@ function tillClose(s, c = 0, r = '') {
       return tillClose(s.slice(1), c, r += n)
 }
 
-console.log(f('4*(2*3)+1')) // 25
+log(f('4*(2*3)+1')) // 25
+log(f('4*3*(2+4)')) // 72
+log(f('4+2*(2*3)')) // 16
