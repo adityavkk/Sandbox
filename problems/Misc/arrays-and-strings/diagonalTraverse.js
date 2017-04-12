@@ -30,7 +30,7 @@ const log = console.log
 /*:: type diagonal = number[] */
 /*:: type pos = [number, number] */
 
-function f(matrix /*: Array<number[]> */) /*: number[] */ {
+function f(matrix /*: number[][] */) /*: number[] */ {
   const mat = new Matrix(matrix), m = mat.rows(), n = mat.cols(),
     rows = range(0, m).map(r => [r, 0]),
     cols = range(1, n).map(c => [m - 1, c]),
@@ -40,7 +40,7 @@ function f(matrix /*: Array<number[]> */) /*: number[] */ {
 }
 
 class Matrix {
-  /*:: mat: Array<number[]> */
+  /*:: mat: number[][] */
   constructor(mat) {
     this.mat = mat
   }
@@ -54,13 +54,14 @@ class Matrix {
   }
 
   val(i, j) /*: ?number */ {
-    return this.mat[i] ? this.mat[i][j] : null
+    return this.mat[i] ? (this.mat[i][j] !== undefined ?
+                          this.mat[i][j] : null) : null
   }
 }
 
 function diag(mat /*: Matrix */, [i, j] /*: pos */, d /*: diagonal */ = []) /*: diagonal */{
   const sVal = mat.val(i, j)
-  return sVal ? diag(mat, [i - 1, j + 1], append(sVal, d)) : d
+  return sVal != null ? diag(mat, [i - 1, j + 1], append(sVal, d)) : d
 }
 
 function concatAndReverseOdd(xxs /*: diagonal[] */) /*: diagonal */ {
@@ -70,7 +71,7 @@ function concatAndReverseOdd(xxs /*: diagonal[] */) /*: diagonal */ {
   }, [])
 }
 
-function append(v, xs) {
+function append /*::<T>*/(v /*: T */, xs /*: T[] */) /*: T[] */ {
   xs.push(v)
   return xs
 }
