@@ -1,0 +1,16 @@
+/*       */
+
+/*:: type list = null | 1 */
+
+const f = (xs /*:: : number[] */) /*:: : number */ => {
+  return xs.reduce((s, x) => s + x, 0)
+}
+
+const g = (ys              ) => {
+  return ys.reduce((s, x) => s + x, 0)
+}
+
+const log = console.log
+log(f([1, 2, 3, 4, 5]))
+log(g([1, null, 3, 4]))
+log(5)
