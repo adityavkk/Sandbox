@@ -20,3 +20,8 @@ function parse(input /*: string */) /*: [graph, vertex][] */{
   })
   return gs
 }
+
+// parseString :: String -> (String -> a) -> [a]
+function parseString(input, f) {
+  return input.split('\n').map(x => console.log(f(x)))
+}
