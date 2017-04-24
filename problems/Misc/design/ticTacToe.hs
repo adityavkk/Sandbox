@@ -21,8 +21,8 @@ data Board = B { pieces :: [[Char]] }
 type Pos = (Int, Int)
 
 instance Show Game where
-  show (G _ _ _ e)
-    | e /= "" = e
+  show g@(G _ _ _ e)
+    | e /= "" = show g { err = "" } ++ "\n" ++ e ++ "\n"
   show g@(G True _ c _) = show (g { state = False }) ++ "\n" ++ nc
                       : " has won the game!"
     where nc = next c
@@ -60,14 +60,14 @@ insert c (i, j) b@(B ps)
 
 move :: Pos -> Game -> Game
 move p g@(G s b c e)
-  | not s && isValid   = updateState $ g { board = insert c p b
-                                , toMove = next c }
-  | otherwise          = g
-  where isValid = fst $ valid p g
+  | not s && isValid   = updateState $ g' { board = insert c p b
+                                          , toMove = next c }
+  | otherwise          = g'
+  where (isValid, g') = valid p g
 
 valid :: Pos -> Game -> (Bool, Game)
-valid (i, j) g = if err g == "" && (pieces $ board g) !! i !! j == ' '
-                 then (True, g)
+valid (i, j) g = if i < 3 && j < 3 && pieces (board g) !! i !! j == ' '
+                 then (True, g { err = "" })
                  else (False, g { err = "invalid move" })
 
 updateState :: Game -> Game
@@ -83,3 +83,17 @@ win (B ps) = any same ps || any same (transpose ps) || any same (diags ps)
 diags xxs = [xxs !! i !! i | i <- [0..l]] :
             [[xxs !! (l - j) !! j | j <- [l, l - 1..0]]]
   where l = length xxs - 1
+
+main = do
+  putStrLn "Hi! Let's play a game of Tic-Tac-Toe"
+  play emptyGame
+
+play :: Game -> IO ()
+play g = do
+  print g
+  if state g
+  then putStrLn "Cya!"
+  else do
+         putStrLn (toMove g : " to move. Where do you want to play (i, j)?")
+         pos <- getLine
+         play (move (read pos) g)
