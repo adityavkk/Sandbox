@@ -21,7 +21,7 @@ Approach:
 """
 
 from math import log
-import bisect
+from random import randrange
 
 def num_primes(n):
 
@@ -40,3 +40,16 @@ def num_primes(n):
 
 def g(n):
     return (n - 3) / log(3)
+
+def fermat_test(n):
+    if n % 2 == 0 or n % 3 == 0 or n % 5 == 0 or n % 7 == 0 or n % 11 == 0:
+        return False
+    rs = [randrange(2, n if n < 1000 else 1000) for _ in range(0, 5)]
+    return all(map(lambda a: a**(n - 1) % n == 1, rs))
+
+def f(n):
+    c = 1
+    for i in range(3, n + 1):
+        if fermat_test(i):
+            c += 1
+    return c
