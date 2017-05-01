@@ -76,7 +76,8 @@ updateState g
   | otherwise = g { state = win $ board g }
 
 win :: Board -> Bool
-win (B ps) = any same ps || any same (transpose ps) || any same (diags ps)
+win (B ps) = any same ps || any same (transpose ps) || any same (diags ps) ||
+             all (notElem ' ') ps
   where same []     = True
         same (x:xs) = all (\ y -> y == x && y /= ' ') xs
 
