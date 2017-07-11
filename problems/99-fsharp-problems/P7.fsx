@@ -7,9 +7,12 @@ let xs = Many [One 1; Many [One 2; One 3]; One 4]
 
 let rec flatten = function
     | One x -> [x]
-    | Many [] -> []
-    | Many (x :: xs) -> (flatten x) @ (List.collect flatten xs)
+    | Many xs -> List.collect flatten xs
 
 let rec flatten' = function
     | One x -> [x]
     | Many xs -> List.foldBack (fun x ys -> flatten' x @ ys) xs []
+
+let rec flatten'' = function
+    | One x -> [x]
+    | Many xs -> List.concat [ for x in xs -> flatten'' x ]
