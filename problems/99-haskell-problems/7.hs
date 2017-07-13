@@ -12,7 +12,7 @@ flatten (List xs)  = xs >>= flatten
 flatten' :: NestedList a -> [a]
 flatten' (Elem a)      = [a]
 flatten' (List [])     = []
-flatten' (List (x:xs)) = flatten x ++ flatten (List xs)
+flatten' (List (x:xs)) = flatten' x ++ flatten' (List xs)
 
 flatten'' :: NestedList a -> [a]
 flatten'' (Elem a)  = [a]
