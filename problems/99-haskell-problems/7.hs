@@ -6,14 +6,18 @@ data NestedList a = Elem a
 list = List [Elem 1, Elem 2, List [Elem 2, List [Elem 3, Elem 4], Elem 5]]
 
 flatten :: NestedList a -> [a]
-flatten (Elem a)      = [a]
-flatten (List [])     = []
-flatten (List (x:xs)) = flatten x ++ flatten (List xs)
+flatten (Elem a)   = [a]
+flatten (List xs)  = xs >>= flatten
 
 flatten' :: NestedList a -> [a]
-flatten' (Elem a) = [a]
-flatten' (List xs) = concat [flatten' x | x <- xs]
+flatten' (Elem a)      = [a]
+flatten' (List [])     = []
+flatten' (List (x:xs)) = flatten' x ++ flatten' (List xs)
 
 flatten'' :: NestedList a -> [a]
-flatten'' (Elem a) = [a]
-flatten'' (List xs) = concat $ map flatten'' xs
+flatten'' (Elem a)  = [a]
+flatten'' (List xs) = concat [flatten' x | x <- xs]
+
+flatten''' :: NestedList a -> [a]
+flatten''' (Elem a)  = [a]
+flatten''' (List xs) = concat $ map flatten'' xs
