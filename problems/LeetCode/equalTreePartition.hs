@@ -3,13 +3,16 @@ import Prelude hiding (sum)
 data BinTree =
   Node
     { getVal   :: Int
-    , getSum   :: Int
+    , getSumFromNode   :: Int
     , getLeft  :: BinTree
     , getRight :: BinTree
     }
   | Leaf deriving (Eq, Show)
 
 data BasicBinTree = BasicNode Int BasicBinTree BasicBinTree | BasicLeaf deriving Show
+
+getSum (Node _ s _ _) = s
+getSum Leaf           = 0
 
 toBinTree :: BasicBinTree -> BinTree
 toBinTree BasicLeaf = Leaf
@@ -18,8 +21,6 @@ toBinTree (BasicNode val left right) =
   where
     leftBinTree  = toBinTree left
     rightBinTree = toBinTree right
-    getSum Leaf = 0
-    getSum (Node _ sum _ _) = sum
 
 modifiedDFS :: BinTree -> Bool
 modifiedDFS tree = f tree 0
@@ -37,8 +38,14 @@ modifiedDFS tree = f tree 0
         getSum (direction tree) == parentSum - getSum (direction tree)
 
 tree1 =
-  BasicNode 3 (BasicNode (-2) BasicLeaf BasicLeaf) (BasicNode 8 (BasicNode (-9) BasicLeaf BasicLeaf) (BasicNode 2 BasicLeaf BasicLeaf))
-
-tree2 = BasicNode 7 tree1 BasicLeaf
-
-
+  BasicNode 3
+  (BasicNode (-2) BasicLeaf BasicLeaf)
+  (BasicNode 8
+    (BasicNode (-9) BasicLeaf BasicLeaf)
+    (BasicNode 2 BasicLeaf BasicLeaf))
+tree2 =
+  BasicNode 4
+    (BasicNode (2) BasicLeaf BasicLeaf)
+    (BasicNode 18
+      (BasicNode (2) BasicLeaf BasicLeaf)
+      (BasicNode (-7) BasicLeaf BasicLeaf))
