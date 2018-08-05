@@ -61,19 +61,29 @@ instance Applicative Parser where
                 Nothing ->  Nothing
                 (Just (f', cs')) -> fmap (first f') (g cs')
 
+abParser :: Parser (Char, Char)
+abParser = (,) <$> char 'a' <*> char 'b'
+
+abParser_ :: Parser ()
+abParser_ = (\ _ _ -> ()) <$> char 'a' <*> char 'b'
+
+intPair :: Parser [Integer]
+intPair = (\a _ b -> [a, b]) <$> posInt <*> char ' ' <*> posInt
+
 instance Alternative Parser where
   empty = Parser $ const Nothing
   Parser f <|> Parser g = Parser $ liftA2 (<|>) f g
 
-zeroOrMore p = oneOrMore p <|> pure []
-zeroOrMoreWithState updater p = oneOrMoreWithState updater p <|> pure []
+upper = satisfy isUpper
 
+ignore = const ()
+intOrUppercase :: Parser ()
+intOrUppercase = ignore <$> posInt <|> ignore <$> upper
+
+zeroOrMore p = oneOrMore p <|> pure []
+
+oneOrMore :: Parser a -> Parser [a]
 oneOrMore p = (:) <$> p <*> zeroOrMore p
-oneOrMoreWithState updater p@(Parser f) = Parser (\ s ->
-    case f s of
-      Nothing -> Nothing
-      Just x@(s', rest) ->
-        runParser ((s':) <$> (zeroOrMoreWithState updater (updater x p))) $ rest)
 
 -- Approach:
 -- check :: String -> Pattern -> Bool
@@ -92,24 +102,14 @@ oneOrMoreWithState updater p@(Parser f) = Parser (\ s ->
 type Pattern = String
 
 -- check :: String -> Pattern -> Bool
-check pattern cs =
-  maybe False id checkMatch
-  where
-    result = runMetaParser regExParser pattern cs
-    checkMatch =
-      (\ (parseResult, rest) -> if null rest then True else False)
-      <$> result
+check cs pattern = runMetaParser regExParser pattern cs
 
-anyChar   = satisfy (const True)
+anyChar   = satisfy (/= '*')
 star      = char '*'
-charWithDot c
-  | c == '.'  = anyChar
-  | otherwise = char c
-
-charP     = fmap (:[]) . charWithDot <$> satisfy (/= '*')
+charP     = fmap (:[]) . char <$> anyChar
+starP     = char <$> star
 emptyP    = Parser (\s -> if null s then Just (pure [], []) else Nothing)
-charStarP = zeroOrMoreWithState dotUpdater . charWithDot <$> satisfy (/= '*') <* star
-  where dotUpdater (y, _) _ = char y
+charStarP = zeroOrMore . char <$> anyChar <* star
 
 runMetaParser :: Parser (Parser a) -> String -> String -> Maybe (a, String)
 runMetaParser (Parser f) s1 s2 =
@@ -118,6 +118,17 @@ runMetaParser (Parser f) s1 s2 =
     Just (Parser g, rest) -> g s2
 
 combineParsers p1 p2 = (++) <$> p1 <*> p2
+charOrCharStar = (charStarP <|> charP <|> emptyP)
+x = combineParsers <$> charOrCharStar <*> charOrCharStar
 
 regExParser =
-  emptyP <|> (combineParsers <$> (charStarP <|> charP) <*> regExParser)
+  emptyP <|> combineParsers <$> (charStarP <|> charP) <*> regExParser
+
+
+makeParser :: Pattern -> Parser String
+makeParser pattern =
+  Parser (\ s ->
+      case runParser regExParser $ pattern of
+        Nothing        -> Nothing
+        Just (p, rest) -> runParser p $ s)
+
