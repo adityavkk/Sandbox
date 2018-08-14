@@ -9,17 +9,8 @@
 -- N = 100
 -- K = 2
 -- minimum drops = 14
--- Start at floor 1 and drop it at every 10th floor. 1, 10, 20, 30 ... if the egg breaks at the 40th floor, start at 31 and drop the second egg at each floor from 30-40
 
 -- Approach:
--- Assume that m is the minimum number of drops, then the optimal strategy of dropping would be to drop an egg at the mth floor, if it breaks, then try all the remaining (m - 1) floors
--- If it doesn't break at the mth floor, in order to satisfy our assumption that m is the minimum number of floors, we have to try dropping it at the (m + (m - 1))th floor
---
--- There are m total terms in m + (m - 1) + (m - 2) ... 1 and each term represents a drop.
--- Which choice of m will exhaust all possible floors?
---
--- m * (m - 1) / 2 = n
---
 
 import Data.IORef
 import qualified Data.Map as Map
