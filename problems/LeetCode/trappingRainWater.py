@@ -3,34 +3,27 @@
 # Example: Input: [0,1,0,2,1,0,1,3,2,1,2,1]
 # Output: 6
 
-def find_peaks(es):
-    def is_peak(i, x):
-        if (i == len(es) - 1): return es[i - 1] < x
-        if (i == 0): return es[i + 1] < x
-        return es[i + 1] < x and es[i - 1] < x
+# Approach:
+# For each point i, the water above it is the water trapped by the smaller of the max pillar to the left of i and the max pillar to the right of r
 
-    return [(x, i) for (i, x) in enumerate(es) if is_peak(i, x)]
+from functools import reduce
 
-def f(elevations):
-    peaks = find_peaks(elevations)
-    e_peaks = list(enumerate(peaks))
-    water = 0
-    def get_water(p, i, j):
-        return sum([p - x for x in elevations[i:j]])
-    for (pi, (p, i)) in e_peaks:
-        if pi == len(peaks) - 1:
-            continue
-        else:
-            (pj, (next_peak, j)) = e_peaks[pi + 1]
-            if next_peak > p:
-                water += get_water(p, i + 1, j)
-            else:
-                water += get_water(next_peak, i + 1, j)
-    return water
+def push(x, xs):
+    xs.append(x)
+    return xs
+def rev(xs):
+    return xs[::-1]
+
+def prefix_max(xs):
+    return reduce(lambda maxes, x: push(maxes[-1], maxes) if maxes[-1] > x else push(x, maxes), xs, [-1])[1:]
+def postfix_max(xs):
+    return rev(reduce(lambda maxes, x: push(maxes[-1], maxes) if maxes[-1] > x else push(x, maxes), rev(xs), [-1]))[:-1]
+
+def f(xs):
+    pre_mxs = prefix_max(xs)
+    post_mxs = postfix_max(xs)
+    return sum([min(pre_mxs[i], post_mxs[i]) - x for (i, x) in enumerate(xs)])
 
 elevations = [0,1,0,2,1,0,1,3,2,1,2,1]
 res = f(elevations)
-print(find_peaks(elevations))
 print(res)
-
-
