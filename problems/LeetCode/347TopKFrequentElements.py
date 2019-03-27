@@ -30,7 +30,7 @@ def f(xs, k):
 
 def quick_select(xs, k, s, e):
     print(xs, k, s, e)
-    if e < 0: 
+    if e < 0: raise ValueError('invalid end')
     if e - s == 0:
         return xs[0]
     chunks = make_chunks(xs, s, e)
