@@ -13,7 +13,37 @@ scramble xs ys = HashMap.null fYMinusX
     fYMinusX = foldl f fY xs
     f freq x = if HashMap.member y freq then HashMap.adjust (\ v -> v - 1) x freq else freq
 
--- Test Cases --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------ Test Cases -------------------
 test x y res = 
   if scramble x y == res
      then print "Pass"
