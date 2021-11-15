@@ -5,7 +5,8 @@
 --  fXMinusX = fold over x with z = fX, \ x z -> if x in z, decrement freq of x in z, else z
 --  return isEmpty fXMinusX 
 
-import Data.HashMap.Strict (HashMap)
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as HashMap
 
 scramble xs ys = HashMap.null fYMinusX
   where 
