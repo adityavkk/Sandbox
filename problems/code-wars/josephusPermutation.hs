@@ -26,7 +26,9 @@ safeTail = drop 1
 
 josephus :: [a] -> Int -> [a]
 josephus xs k = fst $ foldl f ([], xs) xs
-  where f (result, ys) _ = let (prev, next) = splitAt (mod (k - 1) (length ys)) ys in (result ++ safeHead next, safeTail next ++ prev)
+  where 
+    f (result, ys) _ = let (prev, next) = splitAt (mod (k - 1) (length ys)) ys in 
+                           (result ++ safeHead next, safeTail next ++ prev)
 
 
 
