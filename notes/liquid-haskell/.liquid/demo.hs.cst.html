@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>notes/liquid-haskell/demo.hs</title>
+</head>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>
+
+<body>
+<hr>
+Put mouse over identifiers to see inferred types
+<pre><span class=hs-linenum>  1: </span><span class='hs-comment'>{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class=hs-linenum>  2: </span><span class=hs-error><span class='hs-keyword'>import</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-conid'>Prelude</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-varid'>hiding</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-layout'>(</span></span><span class=hs-error><span class='hs-varid'>head</span></span><span class=hs-error><span class='hs-layout'>,</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-varid'>abs</span></span><span class=hs-error><span class='hs-layout'>,</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-varid'>take</span></span><span class=hs-error><span class='hs-layout'>,</span></span><span class=hs-error> </span><span class=hs-error><span class='hs-varid'>tail</span></span><span class=hs-error><span class='hs-layout'>)</span></span>
+<span class=hs-linenum>  3: </span>
+<span class=hs-linenum>  4: </span><span class='hs-comment'>-- A Golden Rule Of Programming</span>
+<span class=hs-linenum>  5: </span>
+<span class=hs-linenum>  6: </span><span class='hs-comment'>-- Push requirements upstream over pushing problems downstream</span>
+<span class=hs-linenum>  7: </span>
+<span class=hs-linenum>  8: </span><span class='hs-comment'>-- Implement head :: [a] -&gt; a</span>
+<span class=hs-linenum>  9: </span><span class='hs-definition'>head</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum> 10: </span><span class='hs-definition'>head</span> <span class='hs-conid'>[]</span>    <span class='hs-keyglyph'>=</span> <span class='hs-varid'>error</span> <span class='hs-str'>"can't the the head of an empty list"</span>
+<span class=hs-linenum> 11: </span><span class='hs-definition'>head</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span><span class='hs-conop'>:</span><span class='hs-keyword'>_</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>x</span>
+<span class=hs-linenum> 12: </span>
+<span class=hs-linenum> 13: </span><span class='hs-definition'>tryHead</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum> 14: </span><span class='hs-definition'>tryHead</span> <span class='hs-conid'>[]</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Nothing</span>
+<span class=hs-linenum> 15: </span><span class='hs-definition'>tryHead</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span><span class='hs-conop'>:</span><span class='hs-keyword'>_</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Just</span> <span class='hs-varid'>x</span>
+<span class=hs-linenum> 16: </span>
+<span class=hs-linenum> 17: </span><span class='hs-comment'>-- head :: [a] -&gt; a</span>
+<span class=hs-linenum> 18: </span><span class='hs-comment'>-- head []    = error "Cannot take head of an empty list"</span>
+<span class=hs-linenum> 19: </span><span class='hs-comment'>-- head (x:_) = x</span>
+<span class=hs-linenum> 20: </span>
+<span class=hs-linenum> 21: </span><span class='hs-comment'>-- tryHead :: [a] -&gt; Maybe a</span>
+<span class=hs-linenum> 22: </span><span class='hs-comment'>-- tryHead []    = Nothing</span>
+<span class=hs-linenum> 23: </span><span class='hs-comment'>-- tryHead (x:_) = Just x</span>
+<span class=hs-linenum> 24: </span>
+<span class=hs-linenum> 25: </span><span class='hs-comment'>-- x  = head []</span>
+<span class=hs-linenum> 26: </span><span class='hs-comment'>-- x' = tryHead []</span>
+<span class=hs-linenum> 27: </span>
+<span class=hs-linenum> 28: </span>
+<span class=hs-linenum> 29: </span><span class='hs-comment'>-- What if we can make our code safer without any term level code changes by making our type system more expressive</span>
+<span class=hs-linenum> 30: </span>
+<span class=hs-linenum> 31: </span>
+<span class=hs-linenum> 32: </span><span class='hs-definition'>y</span>  <span class='hs-keyglyph'>=</span> <span class='hs-varid'>head</span> <span class='hs-conid'>[]</span>
+<span class=hs-linenum> 33: </span><span class='hs-definition'>y'</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>head</span> <span class='hs-keyglyph'>[</span><span class='hs-num'>12</span><span class='hs-layout'>,</span> <span class='hs-num'>13</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum> 34: </span>
+<span class=hs-linenum> 35: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>head</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyword'>{ xs:</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>| 1 &lt;= len xs }</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum> 36: </span>
+<span class=hs-linenum> 37: </span><span class='hs-comment'>-- deserialize list = if length list == 0 then error "Junk data found" else list</span>
+<span class=hs-linenum> 38: </span><span class='hs-comment'>-- head junkListFromJson</span>
+<span class=hs-linenum> 39: </span>
+<span class=hs-linenum> 40: </span>
+<span class=hs-linenum> 41: </span><span class='hs-comment'>-- Refinement Types</span>
+<span class=hs-linenum> 42: </span><span class='hs-comment'>-- Refinement types = types + predicates</span>
+<span class=hs-linenum> 43: </span>
+<span class=hs-linenum> 44: </span><span class='hs-comment'>-- Predicates are drawn from well-behaved logics.</span>
+<span class=hs-linenum> 45: </span><span class='hs-comment'>-- We have completely automatic decision procedures that work very fast.</span>
+<span class=hs-linenum> 46: </span>
+<span class=hs-linenum> 47: </span><span class='hs-comment'>-- SMT Solver - black box that can answer questions in these logics.</span>
+<span class=hs-linenum> 48: </span><span class='hs-comment'>-- Completely decideable</span>
+<span class=hs-linenum> 49: </span>
+<span class=hs-linenum> 50: </span><span class='hs-comment'>-- Grammar</span>
+<span class=hs-linenum> 51: </span>
+<span class=hs-linenum> 52: </span><span class='hs-comment'>-- b = Int</span>
+<span class=hs-linenum> 53: </span><span class='hs-comment'>--   | Bool</span>
+<span class=hs-linenum> 54: </span><span class='hs-comment'>--   | Int</span>
+<span class=hs-linenum> 55: </span><span class='hs-comment'>--   | ...</span>
+<span class=hs-linenum> 56: </span><span class='hs-comment'>--   | a, b, c -- type variables</span>
+<span class=hs-linenum> 57: </span>
+<span class=hs-linenum> 58: </span><span class='hs-comment'>-- t := { x:b | p } -- refined base</span>
+<span class=hs-linenum> 59: </span><span class='hs-comment'>--   | x: t -&gt; t    -- refined function</span>
+<span class=hs-linenum> 60: </span>
+<span class=hs-linenum> 61: </span><span class='hs-comment'>-- -- predicate in decidable logic</span>
+<span class=hs-linenum> 62: </span><span class='hs-comment'>-- p := e       -- atom</span>
+<span class=hs-linenum> 63: </span><span class='hs-comment'>--   | e1 == e2 -- equality</span>
+<span class=hs-linenum> 64: </span><span class='hs-comment'>--   | e1 &lt; e2  -- ordering</span>
+<span class=hs-linenum> 65: </span><span class='hs-comment'>--   | p &amp;&amp; p   -- and</span>
+<span class=hs-linenum> 66: </span><span class='hs-comment'>--   | p || p   -- or</span>
+<span class=hs-linenum> 67: </span><span class='hs-comment'>--   | (not p)  -- negation</span>
+<span class=hs-linenum> 68: </span>
+<span class=hs-linenum> 69: </span><span class='hs-comment'>-- e := x, y, z</span>
+<span class=hs-linenum> 70: </span><span class='hs-comment'>--   | 0, 1, 2</span>
+<span class=hs-linenum> 71: </span><span class='hs-comment'>--   | e + e</span>
+<span class=hs-linenum> 72: </span><span class='hs-comment'>--   | e - e</span>
+<span class=hs-linenum> 73: </span><span class='hs-comment'>--   | c * c</span>
+<span class=hs-linenum> 74: </span><span class='hs-comment'>--   | (f e1 .. en) -- uninterpreted function</span>
+<span class=hs-linenum> 75: </span>
+<span class=hs-linenum> 76: </span><span class='hs-comment'>-- Refinement Logic: QF-UFLIA</span>
+<span class=hs-linenum> 77: </span><span class='hs-comment'>-- Quantifier-free Logic of Uninterpreted Functions and Linear Arithmetic</span>
+<span class=hs-linenum> 78: </span>
+<span class=hs-linenum> 79: </span><span class='hs-comment'>-- The logic that we're in in decideable</span>
+<span class=hs-linenum> 80: </span><span class='hs-comment'>-- predicates in our logic: p, q</span>
+<span class=hs-linenum> 81: </span><span class='hs-comment'>-- Very efficient algorithms that will decide whether p =&gt; q</span>
+<span class=hs-linenum> 82: </span>
+<span class=hs-linenum> 83: </span>
+<span class=hs-linenum> 84: </span>
+<span class=hs-linenum> 85: </span>
+<span class=hs-linenum> 86: </span>
+<span class=hs-linenum> 87: </span>
+<span class=hs-linenum> 88: </span>
+<span class=hs-linenum> 89: </span>
+<span class=hs-linenum> 90: </span>
+<span class=hs-linenum> 91: </span>
+<span class=hs-linenum> 92: </span>
+<span class=hs-linenum> 93: </span>
+<span class=hs-linenum> 94: </span>
+<span class=hs-linenum> 95: </span>
+<span class=hs-linenum> 96: </span>
+<span class=hs-linenum> 97: </span>
+<span class=hs-linenum> 98: </span>
+<span class=hs-linenum> 99: </span>
+<span class=hs-linenum>100: </span>
+<span class=hs-linenum>101: </span>
+<span class=hs-linenum>102: </span>
+<span class=hs-linenum>103: </span>
+<span class=hs-linenum>104: </span>
+<span class=hs-linenum>105: </span>
+<span class=hs-linenum>106: </span>
+<span class=hs-linenum>107: </span>
+<span class=hs-linenum>108: </span><span class='hs-comment'>-- Why this is even better?</span>
+<span class=hs-linenum>109: </span>
+<span class=hs-linenum>110: </span><span class='hs-comment'>-- Static Vs. Runtime Checks</span>
+<span class=hs-linenum>111: </span>
+<span class=hs-linenum>112: </span><span class='hs-comment'>-- Efficiency vs. Safety</span>
+<span class=hs-linenum>113: </span>
+<span class=hs-linenum>114: </span><span class='hs-comment'>-- No Checks are efficient but not safe</span>
+<span class=hs-linenum>115: </span>
+<span class=hs-linenum>116: </span><span class='hs-comment'>-- Runtime checks can be safe (not really) but aren't efficient and difficult to manage</span>
+<span class=hs-linenum>117: </span>
+<span class=hs-linenum>118: </span><span class='hs-comment'>-- Static Checks are both safe and efficient</span>
+<span class=hs-linenum>119: </span>
+<span class=hs-linenum>120: </span><span class='hs-keyword'>{-@</span> <span class='hs-keyword'>type</span> <span class='hs-conid'>Nat</span> <span class='hs-keyglyph'>=</span> <span class='hs-layout'>{</span> <span class='hs-varid'>v</span><span class='hs-conop'>:</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>|</span> <span class='hs-num'>0</span> <span class='hs-varop'>&lt;=</span> <span class='hs-varid'>v</span> <span class='hs-layout'>}</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>121: </span>
+<span class=hs-linenum>122: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>nats</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Nat</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>123: </span><span class='hs-definition'>nats</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Int</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>124: </span><span class='hs-definition'>nats</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyglyph'>[</span><span class='hs-num'>0</span><span class='hs-layout'>,</span> <span class='hs-num'>1</span><span class='hs-layout'>,</span> <span class='hs-num'>2</span><span class='hs-layout'>,</span> <span class='hs-num'>3</span><span class='hs-layout'>,</span> <span class='hs-num'>5</span><span class='hs-layout'>,</span> <span class='hs-num'>6</span><span class='hs-layout'>,</span> <span class='hs-num'>7</span><span class='hs-layout'>,</span> <span class='hs-num'>8</span><span class='hs-layout'>,</span> <span class='hs-num'>8</span><span class='hs-layout'>,</span> <span class='hs-num'>9</span><span class='hs-layout'>,</span> <span class='hs-num'>10</span><span class='hs-layout'>,</span> <span class='hs-num'>11</span><span class='hs-layout'>,</span> <span class='hs-num'>12</span><span class='hs-layout'>,</span> <span class='hs-comment'>-</span><span class='hs-num'>1</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>125: </span>
+<span class=hs-linenum>126: </span>
+<span class=hs-linenum>127: </span>
+<span class=hs-linenum>128: </span>
+<span class=hs-linenum>129: </span><span class='hs-comment'>-- Postconditions</span>
+<span class=hs-linenum>130: </span>
+<span class=hs-linenum>131: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>abs</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyword'>{ n :</span> <span class='hs-conid'>Int</span> <span class='hs-keyword'>| 0 &lt;= n }</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>132: </span><span class='hs-definition'>abs</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>133: </span><span class='hs-definition'>abs</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>if</span> <span class='hs-varid'>x</span> <span class='hs-varop'>&lt;</span> <span class='hs-num'>0</span> <span class='hs-keyword'>then</span> <span class='hs-varid'>negate</span> <span class='hs-varid'>x</span> <span class='hs-keyword'>else</span> <span class='hs-varid'>x</span>
+<span class=hs-linenum>134: </span>
+<span class=hs-linenum>135: </span>
+<span class=hs-linenum>136: </span>
+<span class=hs-linenum>137: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>assume</span> <span class='hs-varid'>foo</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>138: </span><span class='hs-definition'>foo</span> <span class='hs-keyglyph'>=</span> <span class='hs-num'>1</span> <span class='hs-conop'>:::</span> <span class='hs-num'>5</span> <span class='hs-conop'>:::</span> <span class='hs-num'>2</span> <span class='hs-conop'>:::</span> <span class='hs-conid'>Empty</span>
+<span class=hs-linenum>139: </span>
+<span class=hs-linenum>140: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>take</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyword'>{ v:</span> <span class='hs-conid'>Int</span> <span class='hs-keyword'>| v &gt;= 0 }</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyword'>{ xs:</span><span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>| v &lt;= len xs }</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyword'>{ ys:</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>| v == len ys }</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>141: </span><span class='hs-definition'>take</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>142: </span><span class='hs-definition'>take</span> <span class='hs-num'>0</span> <span class='hs-keyword'>_</span>  <span class='hs-keyglyph'>=</span> <span class='hs-conid'>[]</span>
+<span class=hs-linenum>143: </span><span class='hs-definition'>take</span> <span class='hs-varid'>n</span> <span class='hs-varid'>xs</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>head</span> <span class='hs-varid'>xs</span> <span class='hs-conop'>:</span> <span class='hs-varid'>take</span> <span class='hs-layout'>(</span><span class='hs-varid'>n</span> <span class='hs-comment'>-</span> <span class='hs-num'>1</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>tail</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>144: </span>
+<span class=hs-linenum>145: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>tail</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyword'>{ xs :</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>| 1 &lt;= len xs }</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyword'>{ ys:</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyword'>| len xs - 1 == len ys }</span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>146: </span><span class='hs-definition'>tail</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>147: </span><span class='hs-definition'>tail</span> <span class='hs-layout'>(</span><span class='hs-keyword'>_</span><span class='hs-conop'>:</span><span class='hs-varid'>xs</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>xs</span>
+<span class=hs-linenum>148: </span>
+<span class=hs-linenum>149: </span><span class='hs-comment'>-- Ordered Lists</span>
+<span class=hs-linenum>150: </span><span class='hs-keyword'>data</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Empty</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>a</span> <span class='hs-conop'>:::</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum>151: </span>
+<span class=hs-linenum>152: </span><span class='hs-keyword'>infixr</span> <span class='hs-num'>9</span> <span class='hs-conop'>:::</span>
+<span class=hs-linenum>153: </span>
+<span class=hs-linenum>154: </span>
+<span class=hs-linenum>155: </span><span class='hs-definition'>good</span> <span class='hs-keyglyph'>=</span> <span class='hs-num'>1</span> <span class='hs-conop'>:::</span> <span class='hs-num'>2</span> <span class='hs-conop'>:::</span> <span class='hs-num'>3</span> <span class='hs-conop'>:::</span> <span class='hs-conid'>Empty</span>
+<span class=hs-linenum>156: </span><span class='hs-definition'>bad</span>  <span class='hs-keyglyph'>=</span> <span class='hs-num'>10</span> <span class='hs-conop'>:::</span> <span class='hs-num'>15</span> <span class='hs-conop'>:::</span> <span class='hs-num'>12</span> <span class='hs-conop'>:::</span> <span class='hs-conid'>Empty</span>
+<span class=hs-linenum>157: </span>
+<span class=hs-linenum>158: </span><span class='hs-keyword'>{-@</span> <span class='hs-keyword'>data</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Empty</span> <span class='hs-keyglyph'>|</span> <span class='hs-layout'>(</span><span class='hs-conop'>:::</span><span class='hs-layout'>)</span> <span class='hs-layout'>{</span> <span class='hs-varid'>hd</span> <span class='hs-keyglyph'>::</span> <span class='hs-varid'>a</span><span class='hs-layout'>,</span> <span class='hs-varid'>tl</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>OrdList</span> <span class='hs-layout'>{</span><span class='hs-varid'>v</span><span class='hs-conop'>:</span><span class='hs-varid'>a</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>hd</span> <span class='hs-varop'>&lt;=</span> <span class='hs-varid'>v</span><span class='hs-layout'>}</span><span class='hs-layout'>}</span>  <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>159: </span>
+<span class=hs-linenum>160: </span><span class='hs-comment'>-- Implement Quicksort</span>
+<span class=hs-linenum>161: </span><span class='hs-definition'>quickSort</span> <span class='hs-keyglyph'>::</span> <span class='hs-layout'>(</span><span class='hs-conid'>Ord</span> <span class='hs-varid'>a</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>a</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum>162: </span><span class='hs-definition'>quickSort</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span><span class='hs-conop'>:</span><span class='hs-varid'>xs</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>append</span> <span class='hs-varid'>lesser</span> <span class='hs-varid'>x</span> <span class='hs-varid'>greater</span>
+<span class=hs-linenum>163: </span>  <span class='hs-keyword'>where</span>
+<span class=hs-linenum>164: </span>    <span class='hs-varid'>lesser</span>  <span class='hs-keyglyph'>=</span> <span class='hs-varid'>quickSort</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>y</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>y</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>xs</span> <span class='hs-layout'>,</span> <span class='hs-varid'>y</span> <span class='hs-varop'>&lt;</span> <span class='hs-varid'>x</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>165: </span>    <span class='hs-varid'>greater</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>quickSort</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>y</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>y</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>xs</span><span class='hs-layout'>,</span> <span class='hs-varid'>y</span> <span class='hs-varop'>&gt;=</span> <span class='hs-varid'>x</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>166: </span>
+<span class=hs-linenum>167: </span><span class='hs-keyword'>{-@</span> <span class='hs-varid'>append</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>OrdList</span> <span class='hs-keyword'>{v:</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>| v &lt; x }</span>
+<span class=hs-linenum>168: </span>              <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>x</span><span class='hs-conop'>:</span><span class='hs-varid'>a</span>
+<span class=hs-linenum>169: </span>              <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-keyword'>{v:</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>| v &gt;= x }</span>
+<span class=hs-linenum>170: </span>              <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum>171: </span> <span class='hs-keyword'>@-}</span>
+<span class=hs-linenum>172: </span><span class='hs-definition'>append</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Ord</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>=&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>OrdList</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum>173: </span><span class='hs-definition'>append</span> <span class='hs-conid'>Empty</span>      <span class='hs-varid'>z</span> <span class='hs-varid'>ys</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>z</span> <span class='hs-conop'>:::</span> <span class='hs-varid'>ys</span>
+<span class=hs-linenum>174: </span><span class='hs-definition'>append</span> <span class='hs-layout'>(</span><span class='hs-varid'>x</span> <span class='hs-conop'>:::</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span> <span class='hs-varid'>z</span> <span class='hs-varid'>ys</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>x</span> <span class='hs-conop'>:::</span> <span class='hs-varid'>append</span> <span class='hs-varid'>z</span> <span class='hs-varid'>xs</span> <span class='hs-varid'>ys</span>
+<span class=hs-linenum>175: </span>
+<span class=hs-linenum>176: </span><span class='hs-comment'>-- [1, 2, 3] [2, 5, 7] == [1, 2, 3, 2, 5, 7]</span>
+<span class=hs-linenum>177: </span>
+<span class=hs-linenum>178: </span><span class='hs-comment'>-- quickSort           :: (Ord a) =&gt; [a] -&gt; OrdList a</span>
+<span class=hs-linenum>179: </span><span class='hs-comment'>-- quickSort []        = Empty</span>
+<span class=hs-linenum>180: </span><span class='hs-comment'>-- quickSort (x:xs)    = append x lessers greaters</span>
+<span class=hs-linenum>181: </span><span class='hs-comment'>--   where</span>
+<span class=hs-linenum>182: </span><span class='hs-comment'>--     lessers         = quickSort [y | y &lt;- xs, y &lt; x ]</span>
+<span class=hs-linenum>183: </span><span class='hs-comment'>--     greaters        = quickSort [z | z &lt;- xs, z &gt;= x]</span>
+<span class=hs-linenum>184: </span>
+<span class=hs-linenum>185: </span><span class='hs-definition'>main</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>print</span> <span class='hs-str'>"done"</span>
+</pre>
+</body>
+</html>

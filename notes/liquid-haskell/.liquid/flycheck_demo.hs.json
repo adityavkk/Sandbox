@@ -1,0 +1,1 @@
+{"status":"error","types":{},"sptypes":[],"errors":[{"start":{"line":38,"column":1},"stop":{"line":38,"column":22},"message":"Error: GHC Error\n    \n        Parse error: module header, import declaration\nor top-level declaration expected."}]}

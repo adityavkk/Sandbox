@@ -1,0 +1,1 @@
+{"status":"error","types":{},"sptypes":[],"errors":[{"start":{"line":2,"column":1},"stop":{"line":2,"column":46},"message":"Error: GHC Error\n    \n        Bad interface file: /usr/local/lib/ghc-8.4.1/base-4.11.0.0/Prelude.hi\n    mismatched interface file versions (wanted \"8043\", got \"8041\")"}]}
