@@ -1,10 +1,10 @@
 const alertNames = (keyName, keyTime) => {
   const visitsByName = keyName.reduce((map, name, i) => {
     if (map[name]) {
-      map[name].push(keyTime[i])
+      map[name].push(parseTime(keyTime[i]))
     }
     else {
-      map[name] = [keyTime[i]]
+      map[name] = [parseTime(keyTime[i])]
     }
     return map
   }, {})
@@ -12,10 +12,8 @@ const alertNames = (keyName, keyTime) => {
   const result = Object.entries(visitsByName)
     .filter(([name, times]) => hasAlert(times))
     .map(([name, _]) => name)
-
     result.sort()
     return result
-    
 }
 
 const parseTime = timeS => {
@@ -24,7 +22,7 @@ const parseTime = timeS => {
 }
 
 const withinHour = (start, end) => { 
-  const timeDiff = parseTime(end) - parseTime(start)
+  const timeDiff = end - start
   const result = timeDiff >= 0 && timeDiff <= 60
   return result
 }
