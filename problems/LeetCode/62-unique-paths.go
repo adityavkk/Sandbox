@@ -18,6 +18,32 @@ Explanation: From the top-left corner, there are a total of 3 ways to reach the 
 3. Down -> Right -> Down
 */
 
-func uniquePaths(m int, n int) int {
+import "fmt"
 
+var memo = make(map[string]int)
+
+func makeKey(m int, n int) string {
+	return fmt.Sprintf("%d;%d", m, n)
+}
+
+func uniquePaths(m int, n int) int {
+	key := makeKey(m, n)
+	val, exists := memo[key]
+	if exists {
+		return val
+	}
+	if m == 1 || n == 1 {
+		memo[key] = 1
+		return 1
+	}
+	pathsGoingDown := 0
+	pathsGoingRight := 0
+	if m > 1 {
+		pathsGoingDown = uniquePaths(m-1, n)
+	}
+	if n > 1 {
+		pathsGoingRight = uniquePaths(m, n-1)
+	}
+	memo[key] = pathsGoingDown + pathsGoingRight
+	return pathsGoingDown + pathsGoingRight
 }
