@@ -25,8 +25,11 @@ for w in ws:
 Runtime: O(N^2)
 
 Approach 2:
-construct a set of sorted versions of each word O(N * W Log W)
-for w in ws: check if sort(w) is in set and and add to group O(N * W Log W)
+anagramGroups: Map<string, string[]> = {}
+for w in ws:
+	check if sort(w) is in map and and add to group
+return values of anagramGroups
+
 Runtime: O(N * W Log W)
 
 Pseudo-code:
